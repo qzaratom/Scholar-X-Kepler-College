@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarX Instructor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #00C9B7;
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --sidebar-width: 260px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .instructor-badge {
+            background: rgba(74, 111, 255, 0.15);
+            color: var(--primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: calc(100% - 24px);
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.15);
+            color: white;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .profile-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        /* NEW: Login Interface */
+        .login-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .welcome-card {
+            margin-bottom: 30px;
+        }
+
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 16px rgba(74, 111, 255, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 15px;
+            display: none;
+            font-size: 13px;
+            border-left: 4px solid var(--danger);
+            text-align: left;
+        }
+
+        /* NEW: Remember Me Checkbox */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 15px 0;
+            color: var(--gray-dark);
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 111, 255, 0.3);
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 14px;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .dashboard-header p {
+            color: var(--gray-dark);
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* NEW: Current System Info Box */
+        .current-system-info {
+            background: linear-gradient(135deg, var(--primary) 0%, #3A5BDF 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .system-info-content h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .system-info-content p {
+            opacity: 0.9;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        /* NEW: System Logout Button */
+        .btn-logout-system {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-logout-system:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Instructor Profile Bar */
+        .instructor-profile-bar {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .profile-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-bar-pic {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+
+        .profile-bar-info h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .profile-bar-details {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--gray-dark);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .ranking-badge {
+            background: linear-gradient(135deg, var(--accent) 0%, #2CE0D0 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+        }
+
+        .ranking-label {
+            font-size: 12px;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+
+        .ranking-value {
+            font-size: 22px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Platform Review Card */
+        .platform-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            grid-column: span 2;
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+
+        .stat-icon.review {
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+        }
+
+        .stat-icon.rating {
+            background: linear-gradient(135deg, var(--accent) 0%, #2CE0D0 100%);
+        }
+
+        .stat-icon.feedback {
+            background: linear-gradient(135deg, var(--success) 0%, #22C55E 100%);
+        }
+
+        .stat-icon.suggestion {
+            background: linear-gradient(135deg, var(--warning) 0%, #FBBF24 100%);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-dark);
+            font-weight: 500;
+        }
+
+        .review-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            min-width: 120px;
+        }
+
+        .reviews-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .review-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .reviewer {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .review-rating {
+            color: #FF9529;
+            font-weight: 600;
+        }
+
+        .review-text {
+            color: var(--gray-dark);
+            font-size: 14px;
+        }
+
+        /* Overall Rating Distribution Card */
+        .distribution-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .course-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .course-name {
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .course-rating {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Top Instructors Ranking */
+        .ranking-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .instructors-list {
+            margin-top: 20px;
+        }
+
+        .instructor-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .instructor-item:hover {
+            background: var(--light);
+        }
+
+        .instructor-item:last-child {
+            border-bottom: none;
+        }
+
+        .instructor-rank {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            width: 40px;
+            text-align: center;
+        }
+
+        .instructor-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .instructor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .instructor-details h4 {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .instructor-course {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .instructor-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Study Distribution - Horizontal Layout */
+        .study-distribution-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            grid-column: span 2;
+        }
+
+        .distribution-horizontal {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        .distribution-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .bar-container {
+            width: 40px;
+            height: 150px;
+            background: var(--gray-light);
+            border-radius: var(--radius-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--primary);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .bar-value {
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        /* Form Controls */
+        .form-control {
+            padding: 8px 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            font-size: 18px;
+            color: var(--secondary);
+            cursor: pointer;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 350px;
+            font-size: 14px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .platform-card,
+            .study-distribution-card {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 24px;
+            }
+            
+            .dashboard-header p {
+                font-size: 14px;
+            }
+            
+            .instructor-profile-bar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 15px;
+            }
+            
+            .profile-bar-left {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .profile-bar-details {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+            
+            .ranking-badge {
+                min-width: 100px;
+                padding: 8px 15px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .platform-card,
+            .distribution-card,
+            .ranking-card,
+            .study-distribution-card {
+                padding: 20px;
+            }
+            
+            .review-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .distribution-horizontal {
+                gap: 10px;
+            }
+            
+            .distribution-bar {
+                min-width: 60px;
+            }
+
+            .current-system-info {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .profile-bar-pic {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .profile-bar-info h3 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="instructor-badge">Instructor Portal</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item active" onclick="navigateToDashboard()">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="navigateToSuggestionBox()">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestion Box</span>
+            </button>
+            <button class="nav-item" onclick="navigateToRatingManagement()">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </button>
+            <button class="nav-item" onclick="navigateToLearningHub()">
+                <i class="fas fa-book-open"></i>
+                <span>Learning HUB</span>
+            </button>
+            <button class="nav-item" onclick="navigateToSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="sidebarProfilePicture" src="default-instructor.png" alt="Profile" class="profile-pic">
+                <div class="profile-info">
+                    <h4 id="sidebarInstructorName">Not Logged In</h4>
+                    <p id="sidebarInstructorRole">Select System</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logoutInstructor()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- NEW: Login Interface -->
+        <div id="loginSection" class="login-section" style="display: none;">
+            <div class="welcome-card">
+                <div class="welcome-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h2>Welcome to ScholarX Instructor Dashboard</h2>
+                <p>Please select your rating system and enter your instructor passcode</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="form-group">
+                <label class="form-label">Select Rating System *</label>
+                <select id="systemSelect" class="form-control">
+                    <option value="">-- Select a System --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Instructor Passcode *</label>
+                <input type="password" id="codeInput" class="form-control" placeholder="Enter your instructor passcode">
+                <small style="color: var(--gray); display: block; margin-top: 6px; font-size: 12px;">
+                    <i class="fas fa-info-circle"></i> Your instructor passcode was provided by your administrator
+                </small>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">Keep me logged in to this system</label>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="loginInstructor()">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Access Dashboard</span>
+            </button>
+        </div>
+
+        <!-- Dashboard Interface -->
+        <div id="dashboardInterface" style="display: none;">
+            <!-- Current System Info -->
+            <div class="current-system-info">
+                <div class="system-info-content">
+                    <h3 id="currentSystemTitle">Dashboard Overview</h3>
+                    <p id="currentCourseName">Comprehensive analytics from all your systems</p>
+                    <div class="instructor-info">
+                        <i class="fas fa-user-tie"></i>
+                        <span id="currentInstructorName">Instructor Name</span>
+                    </div>
+                </div>
+                <!-- System Logout Button -->
+                <button class="btn btn-logout-system" onclick="logoutCurrentSystem()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout System</span>
+                </button>
+            </div>
+
+            <div class="dashboard-header">
+                <h1>Instructor Dashboard</h1>
+                <p>Performance overview and analytics for all assigned courses</p>
+                
+                <!-- Instructor Profile Bar -->
+                <div class="instructor-profile-bar" id="instructorProfileBar">
+                    <div class="profile-bar-left">
+                        <img id="profileBarPicture" src="default-instructor.png" alt="Profile" class="profile-bar-pic">
+                        <div class="profile-bar-info">
+                            <h3 id="profileBarName">Instructor Name</h3>
+                            <div class="profile-bar-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user"></i>
+                                    <span id="profileBarUsername">Username</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <span id="profileBarEmail">email@example.com</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-id-card"></i>
+                                    <span id="profileBarRegNo">REG: N/A</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ranking-badge">
+                        <div class="ranking-label">Current Rank</div>
+                        <div class="ranking-value" id="rankingValue">#1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="stats-container" id="summaryStats">
+                <!-- Stats populated by JavaScript -->
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Platform Review Card -->
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <h3 class="card-title">Recent Student Feedback</h3>
+                        <div style="color: var(--gray); font-size: 14px;">
+                            <i class="fas fa-calendar"></i>
+                            <span id="currentMonth">December 2024</span>
+                        </div>
+                    </div>
+                    
+                    <div class="reviews-container" id="reviewsList">
+                        <!-- Reviews will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Overall Rating Distribution Card -->
+                <div class="distribution-card">
+                    <div class="platform-header">
+                        <h3 class="card-title">Performance Trends</h3>
+                        <select id="courseFilter" class="form-control" style="width: auto; padding: 8px 12px; font-size: 13px;" onchange="updateCourseChart()">
+                            <option value="all">All Systems</option>
+                        </select>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="courseDistributionChart"></canvas>
+                    </div>
+                    
+                    <div class="course-legend" id="courseLegend">
+                        <!-- Course legend will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Top Instructors Ranking -->
+                <div class="ranking-card">
+                    <div class="platform-header">
+                        <h3 class="card-title">Your Systems Overview</h3>
+                        <button class="btn btn-sm" style="padding: 6px 12px; background: var(--light); font-size: 12px;" onclick="refreshDashboardData()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="instructors-list" id="instructorsList">
+                        <!-- Systems will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Study Distribution Card - Horizontal Layout -->
+                <div class="study-distribution-card">
+                    <div class="platform-header">
+                        <h3 class="card-title">Session Participation</h3>
+                        <div style="color: var(--gray); font-size: 14px;">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Across All Systems</span>
+                        </div>
+                    </div>
+                    
+                    <div class="distribution-horizontal" id="studyDistribution">
+                        <!-- Study distribution bars will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let ratingSystems = [];
+        let currentInstructor = null;
+        let currentSystemIndex = null;
+        let courseDistributionChart = null;
+        let kcdata = []; // ADDED: kcdata array for user data
+
+        // NEW: Persistent sessions storage
+        const PERSISTENT_SESSIONS_KEY = 'instructorDashboardSessions';
+        const CURRENT_SESSION_KEY = 'instructorCurrentDashboardSession';
+
+        // ADDED: Function to load logged in user from login.html
+        function loadLoggedInUser() {
+            // Try to get user from localStorage (set by login page)
+            const loggedInUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            // Try to get kcdata from localStorage
+            const storedKcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+            
+            if (storedKcdata.length > 0) {
+                kcdata = storedKcdata;
+            }
+            
+            // If no user in localStorage, try to get from URL parameters
+            if (!loggedInUser) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const userParam = urlParams.get('user');
+                
+                if (userParam) {
+                    try {
+                        const userFromUrl = JSON.parse(decodeURIComponent(userParam));
+                        if (userFromUrl) {
+                            localStorage.setItem('currentUser', JSON.stringify(userFromUrl));
+                            return userFromUrl;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing user from URL:', e);
+                    }
+                }
+                
+                return null;
+            }
+            
+            return loggedInUser;
+        }
+
+        // ADDED: Function to get user data from kcdata array
+        function getUserFromKcdata(userId) {
+            if (!kcdata || kcdata.length === 0) {
+                const storedKcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+                if (storedKcdata.length > 0) {
+                    kcdata = storedKcdata;
+                }
+            }
+            
+            const user = kcdata.find(user => 
+                user.id === userId || 
+                user.username === userId || 
+                user.email === userId
+            );
+            
+            return user;
+        }
+
+        // ADDED: Function to sync kcdata across pages
+        function syncKcdataAcrossPages() {
+            localStorage.setItem('kcdata', JSON.stringify(kcdata));
+            
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+                const kcdataUser = getUserFromKcdata(currentUser.email || currentUser.code);
+                if (kcdataUser) {
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        ...currentUser,
+                        ...kcdataUser
+                    }));
+                }
+            }
+        }
+
+        // ADDED: Function to handle login from login.html page
+        function handleLoginFromLoginPage(loginData) {
+            if (loginData && loginData.role === 'instructor') {
+                localStorage.setItem('currentUser', JSON.stringify(loginData));
+                
+                const userFromKcdata = getUserFromKcdata(loginData.email || loginData.username);
+                
+                if (userFromKcdata) {
+                    showLoginInterface();
+                    
+                    const instructorSystems = ratingSystems.filter(system => {
+                        return system.instructors && system.instructors.some(i => 
+                            i.email === loginData.email || 
+                            i.code === loginData.username
+                        );
+                    });
+                    
+                    if (instructorSystems.length === 1) {
+                        const systemIndex = ratingSystems.findIndex(s => s === instructorSystems[0]);
+                        document.getElementById('systemSelect').value = systemIndex;
+                    }
+                    
+                    showToast(`Welcome ${userFromKcdata.name}! Please enter your instructor code.`, 'success');
+                }
+            }
+        }
+
+        // ADDED: Function to get current user from any page
+        function getCurrentUser() {
+            const sources = [
+                () => JSON.parse(localStorage.getItem('currentUser') || 'null'),
+                () => {
+                    const session = JSON.parse(localStorage.getItem(CURRENT_SESSION_KEY) || 'null');
+                    if (session && ratingSystems[session.systemIndex]) {
+                        const system = ratingSystems[session.systemIndex];
+                        return system.instructors.find(i => i.code === session.instructorCode);
+                    }
+                    return null;
+                },
+                () => JSON.parse(localStorage.getItem('instructorProfile') || 'null')
+            ];
+            
+            for (const source of sources) {
+                const user = source();
+                if (user) {
+                    const kcdataUser = getUserFromKcdata(user.email || user.code);
+                    if (kcdataUser) {
+                        return { ...user, ...kcdataUser };
+                    }
+                    return user;
+                }
+            }
+            
+            return null;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load rating systems
+            ratingSystems = JSON.parse(localStorage.getItem('ratingSystems') || '[]');
+            
+            // Load kcdata from localStorage
+            const storedKcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+            if (storedKcdata.length > 0) {
+                kcdata = storedKcdata;
+            }
+            
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menuToggle');
+                
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Setup enter key for login
+            document.getElementById('codeInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginInstructor();
+                }
+            });
+            
+            // Populate system select
+            populateSystemSelect();
+            
+            // Set current month
+            const now = new Date();
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonth').textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+            
+            // Check for persistent session
+            checkPersistentSession();
+            
+            // ADDED: Check if we came from login page with user data
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginRedirect = urlParams.get('login');
+            
+            if (loginRedirect === 'true') {
+                const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                if (userData) {
+                    handleLoginFromLoginPage(userData);
+                }
+            }
+        });
+
+        // NEW: Check for persistent session
+        function checkPersistentSession() {
+            const currentSession = JSON.parse(localStorage.getItem(CURRENT_SESSION_KEY) || 'null');
+            
+            if (currentSession) {
+                // Verify session is still valid
+                const now = new Date();
+                const sessionDate = new Date(currentSession.loginTime);
+                const hoursDiff = (now - sessionDate) / (1000 * 60 * 60);
+                
+                // If session is less than 24 hours old and "remember me" was checked
+                if (hoursDiff < 24 && currentSession.rememberMe) {
+                    // Auto-login with stored session
+                    autoLoginFromSession(currentSession);
+                } else {
+                    // Session expired or no remember me
+                    showLoginInterface();
+                    localStorage.removeItem(CURRENT_SESSION_KEY);
+                }
+            } else {
+                showLoginInterface();
+            }
+        }
+
+        // NEW: Auto-login from stored session
+        function autoLoginFromSession(sessionData) {
+            const systemIndex = sessionData.systemIndex;
+            const instructorCode = sessionData.instructorCode;
+            
+            if (ratingSystems[systemIndex]) {
+                const system = ratingSystems[systemIndex];
+                const instructor = system.instructors.find(i => i.code.toLowerCase() === instructorCode.toLowerCase());
+                
+                if (instructor) {
+                    // Set current instructor and system
+                    currentInstructor = instructor;
+                    currentSystemIndex = systemIndex;
+                    
+                    // MODIFIED: Load user profile from kcdata
+                    initializeDashboardWithKcdata(instructor);
+                    
+                    // Show dashboard interface
+                    showDashboardInterface(system, instructor);
+                    
+                    showToast(`Welcome back, ${instructor.name}!`, 'success');
+                } else {
+                    // Instructor not found, show login
+                    showLoginInterface();
+                    localStorage.removeItem(CURRENT_SESSION_KEY);
+                }
+            } else {
+                // System not found, show login
+                showLoginInterface();
+                localStorage.removeItem(CURRENT_SESSION_KEY);
+            }
+        }
+
+        // ADDED: Initialize dashboard with kcdata
+        function initializeDashboardWithKcdata(instructor) {
+            const userFromKcdata = getUserFromKcdata(instructor.email || instructor.code);
+            
+            if (userFromKcdata) {
+                instructor.name = userFromKcdata.name || instructor.name;
+                instructor.email = userFromKcdata.email || instructor.email;
+                instructor.profilePic = userFromKcdata.profilePic || instructor.profilePic;
+                instructor.username = userFromKcdata.username;
+                instructor.regNo = userFromKcdata.regNo;
+                instructor.department = userFromKcdata.department;
+                instructor.role = userFromKcdata.role;
+                
+                localStorage.setItem('instructorProfile', JSON.stringify({
+                    name: instructor.name,
+                    email: instructor.email,
+                    profilePic: instructor.profilePic,
+                    username: instructor.username,
+                    regNo: instructor.regNo,
+                    department: instructor.department,
+                    role: instructor.role
+                }));
+            }
+            
+            initializeDashboardWithAllData();
+        }
+
+        // NEW: Show login interface
+        function showLoginInterface() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardInterface').style.display = 'none';
+            
+            // Clear form fields but keep system select
+            if (document.getElementById('codeInput')) {
+                document.getElementById('codeInput').value = '';
+                document.getElementById('rememberMe').checked = false;
+            }
+        }
+
+        // NEW: Show dashboard interface
+        function showDashboardInterface(system, instructor) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardInterface').style.display = 'block';
+            
+            // Update current system info
+            updateCurrentSystemInfo(system, instructor);
+            
+            // MODIFIED: Update profile bar with data from kcdata
+            updateProfileBarWithAllData(instructor);
+            
+            // Initialize dashboard with data from all connected pages
+            initializeDashboardWithAllData();
+        }
+
+        // NEW: Update current system info display
+        function updateCurrentSystemInfo(system, instructor) {
+            document.getElementById('currentSystemTitle').textContent = system.systemName;
+            document.getElementById('currentCourseName').textContent = system.courseName;
+            document.getElementById('currentInstructorName').textContent = instructor.name;
+        }
+
+        // MODIFIED: Update profile bar with data from kcdata
+        function updateProfileBarWithAllData(instructor) {
+            const userFromKcdata = getUserFromKcdata(instructor.email || instructor.code);
+            
+            // Update name
+            let name = "Instructor";
+            if (userFromKcdata && userFromKcdata.name) {
+                name = userFromKcdata.name;
+            } else if (instructor.name) {
+                name = instructor.name;
+            } else {
+                const sharedProfile = JSON.parse(localStorage.getItem('instructorProfile') || 'null');
+                const loginData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                name = sharedProfile?.name || loginData?.name || name;
+            }
+            
+            document.getElementById('profileBarName').textContent = name;
+            document.getElementById('sidebarInstructorName').textContent = name;
+            
+            // Update username/registration
+            let username = instructor.code || `INS-000`;
+            if (userFromKcdata && userFromKcdata.username) {
+                username = userFromKcdata.username;
+            } else if (userFromKcdata && userFromKcdata.regNo) {
+                username = userFromKcdata.regNo;
+            }
+            
+            document.getElementById('profileBarUsername').textContent = username;
+            document.getElementById('profileBarRegNo').textContent = `REG: ${userFromKcdata?.regNo || username}`;
+            
+            // Update email
+            let email = instructor.email || "instructor@scholarx.edu";
+            if (userFromKcdata && userFromKcdata.email) {
+                email = userFromKcdata.email;
+            }
+            
+            document.getElementById('profileBarEmail').textContent = email;
+            
+            // Update profile picture
+            let profilePic = 'default-instructor.png';
+            if (userFromKcdata && userFromKcdata.profilePic) {
+                profilePic = userFromKcdata.profilePic;
+            } else if (instructor.profilePic) {
+                profilePic = instructor.profilePic;
+            } else {
+                const sharedProfile = JSON.parse(localStorage.getItem('instructorProfile') || 'null');
+                const loginData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                profilePic = sharedProfile?.profilePic || loginData?.profilePic || profilePic;
+            }
+            
+            document.getElementById('profileBarPicture').src = profilePic;
+            document.getElementById('sidebarProfilePicture').src = profilePic;
+            
+            // Update role
+            const assignedSystems = ratingSystems.filter(system => {
+                return system.instructors && system.instructors.some(i => i.code === instructor.code);
+            });
+            
+            let roleText = "Dashboard Access";
+            if (userFromKcdata && userFromKcdata.role) {
+                roleText = userFromKcdata.role;
+            } else if (assignedSystems.length > 0) {
+                roleText = `${assignedSystems.length} System${assignedSystems.length > 1 ? 's' : ''} Assigned`;
+            }
+            
+            document.getElementById('sidebarInstructorRole').textContent = roleText;
+            
+            // Calculate ranking based on combined data
+            calculateCombinedRanking(instructor);
+        }
+
+        // NEW: Populate system select dropdown
+        function populateSystemSelect() {
+            const select = document.getElementById('systemSelect');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Select a System --</option>';
+            
+            ratingSystems.forEach((system, index) => {
+                if (system.instructors && system.instructors.length > 0) {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${system.systemName} - ${system.courseName}`;
+                    select.appendChild(option);
+                }
+            });
+            
+            if (ratingSystems.length === 0) {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No rating systems available";
+                option.disabled = true;
+                select.appendChild(option);
+            }
+        }
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Navigation functions
+        function navigateToDashboard() { 
+            // Already on dashboard
+            if (!window.location.pathname.includes('instructordash.html')) {
+                window.location.href = 'instructordash.html';
+            }
+        }
+        
+        function navigateToRatingManagement() { 
+            saveUserProfile();
+            window.location.href = 'instructorR&F.html'; 
+        }
+        
+        function navigateToSuggestionBox() { 
+            saveUserProfile();
+            window.location.href = 'instructorbox.html'; 
+        }
+
+        function navigateToLearningHub() { 
+            saveUserProfile();
+            window.location.href = 'instructorLH.html'; 
+        }
+        
+        function navigateToSettings() { 
+            saveUserProfile();
+            window.location.href = 'settingI.html'; 
+        }
+
+        // MODIFIED: Save user profile to localStorage for sharing across pages
+        function saveUserProfile() {
+            if (currentInstructor) {
+                const userFromKcdata = getUserFromKcdata(currentInstructor.email || currentInstructor.code);
+                
+                const profileData = {
+                    name: currentInstructor.name,
+                    email: currentInstructor.email,
+                    profilePic: document.getElementById('profileBarPicture').src,
+                    registration: currentInstructor.code,
+                    username: userFromKcdata?.username,
+                    regNo: userFromKcdata?.regNo,
+                    department: userFromKcdata?.department,
+                    role: userFromKcdata?.role
+                };
+                
+                localStorage.setItem('instructorProfile', JSON.stringify(profileData));
+            }
+        }
+
+        // MODIFIED: Login instructor with kcdata integration
+        function loginInstructor() {
+            const systemIndex = document.getElementById('systemSelect').value;
+            const code = document.getElementById('codeInput').value.trim();
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (!systemIndex) {
+                showError('Please select a rating system', errorMsg);
+                return;
+            }
+            
+            if (!code) {
+                showError('Please enter your instructor passcode', errorMsg);
+                return;
+            }
+            
+            const system = ratingSystems[systemIndex];
+            const instructor = system.instructors.find(i => i.code.toLowerCase() === code.toLowerCase());
+            
+            if (!instructor) {
+                showError('Invalid instructor passcode for this system. Please check your code and try again.', errorMsg);
+                return;
+            }
+            
+            // Set current instructor and system
+            currentInstructor = instructor;
+            currentSystemIndex = parseInt(systemIndex);
+            
+            // MODIFIED: Load user data from kcdata
+            initializeDashboardWithKcdata(instructor);
+            
+            // Save persistent session if "remember me" is checked
+            if (rememberMe) {
+                localStorage.setItem(CURRENT_SESSION_KEY, JSON.stringify({
+                    systemIndex: currentSystemIndex,
+                    instructorCode: instructor.code,
+                    loginTime: new Date().toISOString(),
+                    rememberMe: true
+                }));
+            } else {
+                localStorage.removeItem(CURRENT_SESSION_KEY);
+            }
+            
+            // Show dashboard interface
+            showDashboardInterface(system, instructor);
+            
+            showToast(`Welcome to ${system.systemName} Dashboard`, 'success');
+        }
+
+        // NEW: Show error message
+        function showError(message, errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // NEW: Logout from current system only
+        function logoutCurrentSystem() {
+            if (confirm('Are you sure you want to logout from this system?')) {
+                // Clear current session
+                currentInstructor = null;
+                currentSystemIndex = null;
+                
+                // Remove persistent session
+                localStorage.removeItem(CURRENT_SESSION_KEY);
+                
+                // Reset UI
+                showLoginInterface();
+                
+                // Destroy chart
+                if (courseDistributionChart) {
+                    courseDistributionChart.destroy();
+                    courseDistributionChart = null;
+                }
+                
+                showToast('Logged out from system successfully', 'success');
+            }
+        }
+
+        // Complete logout (from sidebar)
+        function logoutInstructor() {
+            if (confirm('Are you sure you want to logout completely?')) {
+                // Clear all sessions
+                currentInstructor = null;
+                currentSystemIndex = null;
+                
+                // Clear all storage
+                localStorage.removeItem(CURRENT_SESSION_KEY);
+                localStorage.removeItem('instructorProfile');
+                localStorage.removeItem('currentUser');
+                sessionStorage.clear();
+                
+                // Reset UI
+                document.getElementById('sidebarInstructorName').textContent = 'Not Logged In';
+                document.getElementById('sidebarInstructorRole').textContent = 'Select System';
+                document.getElementById('sidebarProfilePicture').src = 'default-instructor.png';
+                
+                // Show login interface
+                showLoginInterface();
+                
+                // Destroy chart
+                if (courseDistributionChart) {
+                    courseDistributionChart.destroy();
+                    courseDistributionChart = null;
+                }
+                
+                showToast('Logged out successfully', 'success');
+            }
+        }
+
+        // NEW: Initialize dashboard with data from all connected pages
+        function initializeDashboardWithAllData() {
+            // Load data from all connected pages
+            loadSummaryStatistics();
+            loadRecentFeedback();
+            initializePerformanceChart();
+            loadAssignedSystems();
+            loadSessionParticipation();
+        }
+
+        // NEW: Load summary statistics from all data sources
+        function loadSummaryStatistics() {
+            const statsContainer = document.getElementById('summaryStats');
+            
+            // Get data from all connected pages
+            const ratingFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+            const suggestionData = JSON.parse(localStorage.getItem('instructorsuggestions') || '{}');
+            const sessionStatus = JSON.parse(localStorage.getItem('sessionStatus') || '{}');
+            const instructorReplies = JSON.parse(localStorage.getItem('instructorReplies') || '{}');
+            
+            // Calculate statistics
+            const totalReviews = ratingFeedback.length;
+            
+            const avgRating = totalReviews > 0 
+                ? (ratingFeedback.reduce((sum, fb) => sum + fb.rating, 0) / totalReviews).toFixed(1)
+                : 0;
+            
+            // Count total suggestions across all systems
+            let totalSuggestions = 0;
+            if (suggestionData) {
+                Object.values(suggestionData).forEach(system => {
+                    if (system) {
+                        Object.values(system).forEach(dept => {
+                            if (Array.isArray(dept)) {
+                                totalSuggestions += dept.length;
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Count unlocked sessions
+            let unlockedSessions = 0;
+            if (sessionStatus && currentSystemIndex !== null) {
+                const systemStatus = sessionStatus[currentSystemIndex] || {};
+                unlockedSessions = Object.values(systemStatus).filter(v => v === true).length;
+            }
+            
+            // Count instructor replies
+            let replyCount = 0;
+            if (instructorReplies) {
+                Object.values(instructorReplies).forEach(replies => {
+                    if (Array.isArray(replies)) {
+                        replyCount += replies.length;
+                    }
+                });
+            }
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">${totalReviews}</div>
+                            <div class="stat-label">Total Reviews</div>
+                        </div>
+                        <div class="stat-icon review">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">${avgRating}</div>
+                            <div class="stat-label">Avg Rating</div>
+                        </div>
+                        <div class="stat-icon rating">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">${totalSuggestions}</div>
+                            <div class="stat-label">Suggestions</div>
+                        </div>
+                        <div class="stat-icon suggestion">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">${replyCount}</div>
+                            <div class="stat-label">Replies Sent</div>
+                        </div>
+                        <div class="stat-icon feedback">
+                            <i class="fas fa-reply"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load recent feedback from rating systems
+        function loadRecentFeedback() {
+            const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+            const reviewsList = document.getElementById('reviewsList');
+            
+            if (allFeedback.length === 0) {
+                reviewsList.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                        <i class="fas fa-comment-slash" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h4 style="margin-bottom: 10px;">No Feedback Yet</h4>
+                        <p>Student feedback will appear here once submitted</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Show latest 5 reviews
+            const latestReviews = allFeedback
+                .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+                .slice(0, 5);
+            
+            let html = '';
+            latestReviews.forEach(review => {
+                const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                html += `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="reviewer">${review.studentReg}</span>
+                            <span class="review-rating">${stars} (${review.rating}/5)</span>
+                        </div>
+                        <div class="review-text">${review.feedback || "No written feedback provided"}</div>
+                        <div style="font-size: 11px; color: var(--gray); margin-top: 5px;">
+                            ${new Date(review.submittedAt).toLocaleDateString()} • ${review.systemName || "Course"}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            reviewsList.innerHTML = html;
+        }
+
+        // Initialize performance chart with data from all systems
+        function initializePerformanceChart() {
+            const ctx = document.getElementById('courseDistributionChart').getContext('2d');
+            
+            // Get all rating systems for current instructor
+            const assignedSystems = ratingSystems.filter(system => {
+                return system.instructors && system.instructors.some(i => i.code === currentInstructor.code);
+            });
+            
+            if (assignedSystems.length === 0) {
+                // Show empty state
+                ctx.font = "16px Arial";
+                ctx.fillStyle = '#94A3B8';
+                ctx.textAlign = "center";
+                ctx.fillText("No assigned systems found", ctx.canvas.width/2, ctx.canvas.height/2);
+                return;
+            }
+            
+            // Prepare performance data
+            const performanceData = [];
+            const courseColors = generateCourseColors(assignedSystems.length);
+            
+            assignedSystems.forEach((system, index) => {
+                // Get feedback for this system
+                const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+                const systemFeedback = allFeedback.filter(f => f.systemName === system.systemName);
+                
+                if (systemFeedback.length > 0 && system.sessions && system.sessions.length > 0) {
+                    // Calculate average rating per session
+                    const sessionRatings = {};
+                    
+                    systemFeedback.forEach(feedback => {
+                        if (feedback.sessionIndex !== undefined) {
+                            if (!sessionRatings[feedback.sessionIndex]) {
+                                sessionRatings[feedback.sessionIndex] = {
+                                    total: 0,
+                                    count: 0
+                                };
+                            }
+                            sessionRatings[feedback.sessionIndex].total += feedback.rating;
+                            sessionRatings[feedback.sessionIndex].count += 1;
+                        }
+                    });
+                    
+                    // Create data points for each session
+                    const dataPoints = system.sessions.map((session, sessionIndex) => {
+                        if (sessionRatings[sessionIndex]) {
+                            return (sessionRatings[sessionIndex].total / sessionRatings[sessionIndex].count).toFixed(1);
+                        }
+                        return null;
+                    });
+                    
+                    performanceData.push({
+                        label: system.courseName || `System ${index + 1}`,
+                        data: dataPoints,
+                        borderColor: courseColors[index],
+                        backgroundColor: courseColors[index] + '20',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    });
+                }
+            });
+            
+            // Destroy existing chart
+            if (courseDistributionChart) {
+                courseDistributionChart.destroy();
+            }
+            
+            // Create line chart
+            courseDistributionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Session 1', 'Session 2', 'Session 3', 'Session 4', 'Session 5'],
+                    datasets: performanceData
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y}/5`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Average Rating'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Session Progress'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update course filter dropdown
+            updateCourseFilter(assignedSystems);
+            
+            // Update course legend
+            updateCourseLegend(assignedSystems, courseColors);
+        }
+
+        // Generate colors for courses
+        function generateCourseColors(count) {
+            const colors = [
+                '#4A6FFF', '#00C9B7', '#10B981', '#F59E0B', '#EF4444',
+                '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16', '#F97316'
+            ];
+            
+            if (count <= colors.length) {
+                return colors.slice(0, count);
+            }
+            
+            const additionalColors = [];
+            for (let i = colors.length; i < count; i++) {
+                const hue = (i * 137.508) % 360;
+                additionalColors.push(`hsl(${hue}, 70%, 60%)`);
+            }
+            
+            return colors.concat(additionalColors);
+        }
+
+        // Update course filter dropdown
+        function updateCourseFilter(systems) {
+            const filter = document.getElementById('courseFilter');
+            if (!filter) return;
+            
+            filter.innerHTML = '<option value="all">All Systems</option>';
+            
+            systems.forEach((system, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = system.courseName || `System ${index + 1}`;
+                filter.appendChild(option);
+            });
+        }
+
+        // Update course legend
+        function updateCourseLegend(systems, colors) {
+            const legendContainer = document.getElementById('courseLegend');
+            if (!legendContainer) return;
+            
+            legendContainer.innerHTML = '';
+            
+            systems.forEach((system, index) => {
+                // Get average rating for this system
+                const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+                const systemFeedback = allFeedback.filter(f => f.systemName === system.systemName);
+                const avgRating = systemFeedback.length > 0 
+                    ? (systemFeedback.reduce((sum, fb) => sum + fb.rating, 0) / systemFeedback.length).toFixed(1)
+                    : 'N/A';
+                
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <div class="legend-color" style="background-color: ${colors[index]}"></div>
+                    <span class="course-name">${system.courseName || `System ${index + 1}`}</span>
+                    <span class="course-rating">Avg: ${avgRating}/5</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+        }
+
+        // Update chart based on filter
+        function updateCourseChart() {
+            const filterValue = document.getElementById('courseFilter').value;
+            
+            if (filterValue === 'all') {
+                // Show all systems
+                initializePerformanceChart();
+            } else {
+                // Show specific system
+                const assignedSystems = ratingSystems.filter(system => {
+                    return system.instructors && system.instructors.some(i => i.code === currentInstructor.code);
+                });
+                
+                const systemIndex = parseInt(filterValue);
+                if (assignedSystems[systemIndex]) {
+                    updateSingleSystemChart(assignedSystems[systemIndex]);
+                }
+            }
+        }
+
+        // Update chart for single system
+        function updateSingleSystemChart(system) {
+            const ctx = document.getElementById('courseDistributionChart').getContext('2d');
+            
+            // Get feedback for this system
+            const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+            const systemFeedback = allFeedback.filter(f => f.systemName === system.systemName);
+            
+            // Calculate session ratings
+            const sessionRatings = {};
+            systemFeedback.forEach(feedback => {
+                if (feedback.sessionIndex !== undefined) {
+                    if (!sessionRatings[feedback.sessionIndex]) {
+                        sessionRatings[feedback.sessionIndex] = {
+                            total: 0,
+                            count: 0
+                        };
+                    }
+                    sessionRatings[feedback.sessionIndex].total += feedback.rating;
+                    sessionRatings[feedback.sessionIndex].count += 1;
+                }
+            });
+            
+            const dataPoints = system.sessions ? system.sessions.map((session, sessionIndex) => {
+                if (sessionRatings[sessionIndex]) {
+                    return (sessionRatings[sessionIndex].total / sessionRatings[sessionIndex].count).toFixed(1);
+                }
+                return null;
+            }) : [];
+            
+            // Destroy existing chart
+            if (courseDistributionChart) {
+                courseDistributionChart.destroy();
+            }
+            
+            // Create single system line chart
+            courseDistributionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: system.sessions ? system.sessions.map((s, i) => `Session ${i+1}`) : ['Session 1', 'Session 2', 'Session 3'],
+                    datasets: [{
+                        label: system.courseName || 'System',
+                        data: dataPoints,
+                        borderColor: '#4A6FFF',
+                        backgroundColor: '#4A6FFF20',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Average Rating'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Session Progress'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update legend
+            const lastRating = dataPoints.length > 0 ? dataPoints[dataPoints.length - 1] : 'N/A';
+            document.getElementById('courseLegend').innerHTML = `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #4A6FFF"></div>
+                    <span class="course-name">${system.courseName || 'System'}</span>
+                    <span class="course-rating">Current: ${lastRating}/5</span>
+                </div>
+            `;
+        }
+
+        // Load assigned systems for current instructor
+        function loadAssignedSystems() {
+            const instructorsList = document.getElementById('instructorsList');
+            
+            // Get all systems assigned to current instructor
+            const assignedSystems = ratingSystems.filter(system => {
+                return system.instructors && system.instructors.some(i => i.code === currentInstructor.code);
+            });
+            
+            if (assignedSystems.length === 0) {
+                instructorsList.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--gray);">
+                        <i class="fas fa-layer-group" style="font-size: 36px; margin-bottom: 10px;"></i>
+                        <p>No systems assigned to you</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Display assigned systems
+            let html = '';
+            assignedSystems.forEach((system, index) => {
+                // Get feedback for this system
+                const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+                const systemFeedback = allFeedback.filter(f => f.systemName === system.systemName);
+                const avgRating = systemFeedback.length > 0 
+                    ? (systemFeedback.reduce((sum, fb) => sum + fb.rating, 0) / systemFeedback.length).toFixed(1)
+                    : 'N/A';
+                
+                html += `
+                    <div class="instructor-item">
+                        <div class="instructor-rank">${index + 1}</div>
+                        <div class="instructor-info">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="instructor-details">
+                                <h4>${system.courseName}</h4>
+                                <div class="instructor-course">${system.systemName}</div>
+                            </div>
+                        </div>
+                        <div class="instructor-rating">
+                            <i class="fas fa-star"></i>
+                            <span>${avgRating}/5</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            instructorsList.innerHTML = html;
+        }
+
+        // Load session participation data
+        function loadSessionParticipation() {
+            const distributionContainer = document.getElementById('studyDistribution');
+            
+            // Get all systems assigned to current instructor
+            const assignedSystems = ratingSystems.filter(system => {
+                return system.instructors && system.instructors.some(i => i.code === currentInstructor.code);
+            });
+            
+            if (assignedSystems.length === 0) {
+                distributionContainer.innerHTML = `
+                    <div style="text-align: center; width: 100%; padding: 30px; color: var(--gray);">
+                        <i class="fas fa-chart-bar" style="font-size: 36px; margin-bottom: 10px;"></i>
+                        <p>No session participation data available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate participation for each system
+            let html = '';
+            const colors = ['#4A6FFF', '#00C9B7', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
+            
+            assignedSystems.slice(0, 6).forEach((system, index) => {
+                // Get feedback for this system
+                const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+                const systemFeedback = allFeedback.filter(f => f.systemName === system.systemName);
+                
+                // Calculate participation percentage
+                const totalSessions = system.sessions ? system.sessions.length : 5;
+                const totalPossible = totalSessions * (system.students ? system.students.length : 30);
+                const actualParticipation = systemFeedback.length;
+                const percentage = totalPossible > 0 ? Math.min(100, (actualParticipation / totalPossible) * 100) : 0;
+                
+                // Truncate course name if too long
+                const courseName = system.courseName || `System ${index + 1}`;
+                const displayName = courseName.length > 15 
+                    ? courseName.substring(0, 12) + '...' 
+                    : courseName;
+                
+                html += `
+                    <div class="distribution-bar">
+                        <div class="bar-container">
+                            <div class="bar-fill" style="height: ${percentage}%; background-color: ${colors[index % colors.length]};"></div>
+                        </div>
+                        <div class="bar-label">${displayName}</div>
+                        <div class="bar-value">${Math.round(percentage)}%</div>
+                    </div>
+                `;
+            });
+            
+            distributionContainer.innerHTML = html;
+        }
+
+        // Calculate combined ranking based on data from all pages
+        function calculateCombinedRanking(instructor) {
+            // Get all instructors from all data sources
+            const allInstructors = [];
+            
+            // Get from rating systems
+            ratingSystems.forEach(system => {
+                system.instructors.forEach(inst => {
+                    if (!allInstructors.find(i => i.code === inst.code)) {
+                        allInstructors.push(inst);
+                    }
+                });
+            });
+            
+            // Get from login data
+            const loginData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (loginData && loginData.role === 'instructor') {
+                const existing = allInstructors.find(i => i.email === loginData.email);
+                if (!existing) {
+                    allInstructors.push({
+                        code: loginData.username || loginData.email.split('@')[0],
+                        name: loginData.name,
+                        email: loginData.email
+                    });
+                }
+            }
+            
+            if (allInstructors.length === 0) {
+                document.getElementById('rankingValue').textContent = "#N/A";
+                return;
+            }
+            
+            // Calculate average rating for each instructor
+            const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+            
+            const instructorsWithRatings = allInstructors.map(inst => {
+                // Find rating systems this instructor is assigned to
+                const assignedSystems = ratingSystems.filter(system => {
+                    return system.instructors && system.instructors.some(i => i.code === inst.code);
+                });
+                
+                // Get all feedback for these systems
+                let totalRating = 0;
+                let feedbackCount = 0;
+                
+                assignedSystems.forEach(system => {
+                    const systemFeedback = allFeedback.filter(f => f.systemName === system.systemName);
+                    totalRating += systemFeedback.reduce((sum, fb) => sum + (fb.rating || 0), 0);
+                    feedbackCount += systemFeedback.length;
+                });
+                
+                const avgRating = feedbackCount > 0 ? totalRating / feedbackCount : 0;
+                
+                return {
+                    name: inst.name,
+                    code: inst.code,
+                    email: inst.email,
+                    rating: avgRating,
+                    feedbackCount: feedbackCount
+                };
+            });
+            
+            // Sort by rating (highest first)
+            instructorsWithRatings.sort((a, b) => b.rating - a.rating);
+            
+            // Find current instructor's rank
+            const currentRankIndex = instructorsWithRatings.findIndex(inst => 
+                inst.code === instructor.code || inst.email === instructor.email
+            );
+            
+            // Update ranking badge
+            if (currentRankIndex !== -1) {
+                document.getElementById('rankingValue').textContent = `#${currentRankIndex + 1}`;
+            } else {
+                document.getElementById('rankingValue').textContent = "N/A";
+            }
+        }
+
+        // Refresh dashboard data
+        function refreshDashboardData() {
+            // Reload all data
+            loadSummaryStatistics();
+            loadRecentFeedback();
+            initializePerformanceChart();
+            loadAssignedSystems();
+            loadSessionParticipation();
+            
+            // Recalculate ranking
+            if (currentInstructor) {
+                calculateCombinedRanking(currentInstructor);
+            }
+            
+            showToast("Dashboard data refreshed", "success");
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--primary)'};
+                color: white;
+                padding: 12px 18px;
+                border-radius: var(--radius-sm);
+                box-shadow: var(--shadow-lg);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 3000;
+                transform: translateY(100px);
+                opacity: 0;
+                transition: var(--transition);
+                max-width: 350px;
+                font-size: 14px;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => {
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100px)';
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Escape to logout from system
+            if (e.key === 'Escape') {
+                logoutCurrentSystem();
+            }
+            
+            // Ctrl/Cmd + R to refresh
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                refreshDashboardData();
+            }
+            
+            // Ctrl/Cmd + L to logout
+            if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                e.preventDefault();
+                logoutInstructor();
+            }
+        });
+    </script>
+</body>
+</html>

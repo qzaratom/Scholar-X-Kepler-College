@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Suggestion Box - ScholarX</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #00C9B7;
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --sidebar-width: 260px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* NEW: Top Bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 70px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            z-index: 99;
+        }
+
+        .top-bar h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .top-bar h1 i {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        /* Sidebar - ScholarX Design */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .instructor-badge {
+            background: rgba(74, 111, 255, 0.15);
+            color: var(--primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: calc(100% - 24px);
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.15);
+            color: white;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Profile Section */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            box-shadow: 0 4px 8px rgba(74, 111, 255, 0.2);
+        }
+
+        .profile-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            padding-top: 90px; /* Account for top bar */
+            transition: var(--transition);
+        }
+
+        /* NEW: Compact Selection Modal */
+        .selection-modal {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px 30px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 16px rgba(74, 111, 255, 0.2);
+        }
+
+        .selection-modal h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .selection-modal p {
+            color: var(--gray-dark);
+            margin-bottom: 25px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        .form-control option {
+            padding: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 111, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 201, 183, 0.25);
+        }
+
+        .btn-secondary:hover {
+            background: #00B8A9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 201, 183, 0.3);
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 14px;
+        }
+
+        /* Suggestion Box Interface */
+        #suggestionInterface {
+            display: none;
+        }
+
+        .current-system-info {
+            background: linear-gradient(135deg, var(--primary) 0%, #3A5BDF 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .system-info-content h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .system-info-content p {
+            opacity: 0.9;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .btn-logout-system {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-logout-system:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Suggestion Section */
+        .suggestion-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Choices List */
+        .choices-container {
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .choices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .choice-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .choice-text {
+            flex: 1;
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .vote-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            min-width: 80px;
+        }
+
+        .vote-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(74, 111, 255, 0.2);
+        }
+
+        .vote-btn:disabled {
+            background: var(--gray-light);
+            color: var(--gray-dark);
+            cursor: not-allowed;
+        }
+
+        .voted-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--success);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Suggestions List */
+        .suggestions-list {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .suggestion-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            background: rgba(74, 111, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .suggestion-date {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .suggestion-text {
+            color: var(--secondary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Feedback Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .close-modal:hover {
+            background: var(--light);
+            color: var(--danger);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.instructor {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.department {
+            align-self: flex-start;
+            background: var(--light);
+            color: var(--secondary);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .message.instructor .message-header {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .message.department .message-header {
+            color: var(--primary);
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .message-text {
+            word-wrap: break-word;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+            margin-bottom: 12px;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 350px;
+            font-size: 14px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            font-size: 18px;
+            color: var(--secondary);
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .top-bar {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+                padding-top: 80px;
+            }
+            
+            .selection-modal {
+                padding: 20px;
+            }
+            
+            .current-system-info {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .suggestion-section {
+                padding: 20px;
+            }
+            
+            .suggestion-card {
+                padding: 16px;
+            }
+            
+            .choice-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .vote-btn {
+                align-self: flex-end;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="instructor-badge">Instructor Portal</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item" onclick="navigateToDashboard()">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item active" onclick="navigateToSuggestionBox()">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestion Box</span>
+            </button>
+            <button class="nav-item" onclick="navigateToRatingManagement()">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </button>
+            <button class="nav-item" onclick="navigateToLearningHub()">
+                <i class="fas fa-book-open"></i>
+                <span>Learning HUB</span>
+            </button>
+            <button class="nav-item" onclick="navigateToSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="profilePicture" src="default-instructor.png" alt="Profile" class="profile-pic">
+                <div class="profile-info">
+                    <h4 id="instructorName">Instructor</h4>
+                    <p id="instructorReg">ScholarX Portal</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logoutInstructor()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- NEW: Top Bar -->
+    <div class="top-bar">
+        <h1>
+            <i class="fas fa-comments"></i>
+            Instructor Suggestion Box
+        </h1>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Selection Modal - Compact and Simplified -->
+        <div class="selection-modal" id="selectionModal">
+            <div class="modal-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            
+            <h2>Access Suggestion Box</h2>
+            <p>Select a suggestion box from the list below to participate in department surveys and submit your suggestions</p>
+            
+            <div class="form-group">
+                <label class="form-label">Select Suggestion Box</label>
+                <select id="boxSelect" class="form-control">
+                    <option value="">-- Choose a suggestion box --</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary btn-full" onclick="enterSuggestionBox()">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Enter Suggestion Box</span>
+            </button>
+            
+            <div style="text-align: center; margin-top: 20px; color: var(--gray); font-size: 13px;">
+                <p><i class="fas fa-info-circle"></i> You can submit suggestions and participate in surveys</p>
+            </div>
+        </div>
+
+        <!-- Suggestion Box Interface -->
+        <div id="suggestionInterface" style="display: none;">
+            <!-- Current System Info -->
+            <div class="current-system-info">
+                <div class="system-info-content">
+                    <h3 id="currentBoxTitle">Suggestion Box</h3>
+                    <p id="currentDepartmentName">Department Name</p>
+                    <div class="instructor-info">
+                        <i class="fas fa-user-tie"></i>
+                        <span id="currentInstructorName">Instructor</span>
+                    </div>
+                </div>
+                <button class="btn btn-logout-system" onclick="logoutCurrentSystem()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Exit Box</span>
+                </button>
+            </div>
+
+            <div class="suggestion-section">
+                <h2 class="section-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Participate in Suggestion Box
+                </h2>
+                
+                <form id="instructor-suggestion-form" autocomplete="off">
+                    <div class="form-group">
+                        <label class="form-label">Select Department:</label>
+                        <select id="deptSelect" class="form-control" required></select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Multiple Choice Options:</label>
+                        <div class="choices-container">
+                            <div id="choicesList" class="choices-list">
+                                <!-- Choices populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Your Suggestion:</label>
+                        <textarea id="instructorSuggestion" class="form-control" rows="4" required 
+                                  placeholder="Enter your suggestion here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Submit Suggestion</span>
+                    </button>
+                </form>
+                
+                <button class="btn btn-secondary btn-full" id="feedbackBtn" style="margin-top: 15px;">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>View Feedback</span>
+                </button>
+                
+                <div id="suggestionList" class="suggestions-list">
+                    <!-- Suggestions populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModalOverlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Feedback Chat</h2>
+                <button class="close-modal" id="feedbackModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chat-messages" id="feedbackChatList">
+                    <!-- Messages rendered here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="feedbackModalForm" autocomplete="off">
+                    <textarea id="feedbackInput" class="message-input" 
+                              placeholder="Type your feedback to the department..." required></textarea>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send Message</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        // Global variables
+        let suggestionBoxes = [];
+        let currentBoxIndex = null;
+        let currentDeptIndex = null;
+        let currentInstructor = "Instructor";
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load suggestion boxes
+            suggestionBoxes = JSON.parse(localStorage.getItem("suggestionbox") || "[]");
+            
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menuToggle');
+                
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Setup form submissions
+            document.getElementById('instructor-suggestion-form').addEventListener('submit', submitSuggestion);
+            document.getElementById('feedbackModalForm').addEventListener('submit', submitFeedback);
+            
+            // Setup modal close button
+            document.getElementById('feedbackModalClose').addEventListener('click', closeFeedbackModal);
+            
+            // Setup feedback button
+            document.getElementById('feedbackBtn').addEventListener('click', openFeedbackModal);
+            
+            // Close modal when clicking outside
+            document.getElementById('feedbackModalOverlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeFeedbackModal();
+                }
+            });
+            
+            // Populate box options
+            populateBoxOptions();
+        });
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Navigation functions
+        function navigateToDashboard() {
+            window.location.href = 'instructordash.html';
+        }
+
+        function navigateToRatingManagement() {
+            window.location.href = 'instructorR&F.html';
+        }
+
+        function navigateToSuggestionBox() {
+            window.location.href = 'instructorbox.html';
+        }
+
+        function navigateToLearningHub() {
+            window.location.href = 'instructorLH.html';
+        }
+
+        function navigateToSettings() {
+            window.location.href = 'settingI.html';
+        }
+
+        // Populate box options
+        function populateBoxOptions() {
+            const select = document.getElementById('boxSelect');
+            select.innerHTML = '<option value="">-- Choose a suggestion box --</option>';
+            
+            suggestionBoxes.forEach((box, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = box.name;
+                select.appendChild(option);
+            });
+            
+            if (suggestionBoxes.length === 0) {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No suggestion boxes available";
+                option.disabled = true;
+                select.appendChild(option);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast' + (type === 'error' ? ' error' : ' success');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Enter suggestion box
+        function enterSuggestionBox() {
+            const boxIndex = document.getElementById('boxSelect').value;
+            
+            // Validation
+            if (!boxIndex) {
+                showToast('Please select a suggestion box', 'error');
+                return;
+            }
+            
+            currentBoxIndex = parseInt(boxIndex);
+            
+            // Show suggestion interface
+            document.getElementById('selectionModal').style.display = 'none';
+            document.getElementById('suggestionInterface').style.display = 'block';
+            
+            // Initialize department selection
+            populateDeptOptions(currentBoxIndex);
+            
+            // Update current system info
+            updateCurrentSystemInfo();
+            
+            showToast(`Entered ${suggestionBoxes[currentBoxIndex].name}`, 'success');
+        }
+
+        // Update current system info display
+        function updateCurrentSystemInfo() {
+            if (currentBoxIndex === null) return;
+            
+            const box = suggestionBoxes[currentBoxIndex];
+            document.getElementById('currentBoxTitle').textContent = box.name;
+            document.getElementById('currentInstructorName').textContent = currentInstructor;
+            
+            if (box.departments && box.departments.length > 0) {
+                document.getElementById('currentDepartmentName').textContent = box.departments[0] + ' Department';
+            } else {
+                document.getElementById('currentDepartmentName').textContent = 'No Departments';
+            }
+        }
+
+        // Exit current system
+        function logoutCurrentSystem() {
+            if (confirm('Are you sure you want to exit this suggestion box?')) {
+                // Clear current selection
+                currentBoxIndex = null;
+                currentDeptIndex = null;
+                
+                // Reset UI
+                document.getElementById('selectionModal').style.display = 'block';
+                document.getElementById('suggestionInterface').style.display = 'none';
+                
+                // Reset form
+                document.getElementById('boxSelect').value = '';
+                
+                showToast('Exited suggestion box', 'success');
+            }
+        }
+
+        // Complete logout (from sidebar)
+        function logoutInstructor() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all selections
+                currentBoxIndex = null;
+                currentDeptIndex = null;
+                
+                // Reset UI
+                document.getElementById('selectionModal').style.display = 'block';
+                document.getElementById('suggestionInterface').style.display = 'none';
+                
+                // Reset form
+                document.getElementById('boxSelect').value = '';
+                
+                // Close modal if open
+                closeFeedbackModal();
+                
+                showToast('Logged out successfully', 'success');
+            }
+        }
+
+        // Populate department options
+        function populateDeptOptions(boxIdx) {
+            const select = document.getElementById('deptSelect');
+            select.innerHTML = '<option value="">-- Select Department --</option>';
+            
+            const depts = suggestionBoxes[boxIdx]?.departments || [];
+            depts.forEach((dept, dIdx) => {
+                const option = document.createElement('option');
+                option.value = dIdx;
+                option.textContent = dept;
+                select.appendChild(option);
+            });
+            
+            // Add event listener
+            select.addEventListener('change', function() {
+                currentDeptIndex = parseInt(this.value);
+                if (!isNaN(currentDeptIndex)) {
+                    populateChoices();
+                    renderSuggestions();
+                }
+            });
+            
+            // Select first department by default
+            if (depts.length > 0) {
+                select.selectedIndex = 1;
+                currentDeptIndex = 0;
+                populateChoices();
+                renderSuggestions();
+            }
+        }
+
+        // Get vote data
+        function getVoteData() {
+            return JSON.parse(localStorage.getItem("instructorvotes") || "{}");
+        }
+
+        // Save vote data
+        function saveVoteData(data) {
+            localStorage.setItem("instructorvotes", JSON.stringify(data));
+        }
+
+        // Get instructor suggestions
+        function getInstructorSuggestions() {
+            return JSON.parse(localStorage.getItem("instructorsuggestions") || "{}");
+        }
+
+        // Save instructor suggestions
+        function saveInstructorSuggestions(data) {
+            localStorage.setItem("instructorsuggestions", JSON.stringify(data));
+        }
+
+        // Get suggestion messages
+        function getSugMessages() {
+            return JSON.parse(localStorage.getItem("sugmessages") || "{}");
+        }
+
+        // Save suggestion messages
+        function saveSugMessages(data) {
+            localStorage.setItem("sugmessages", JSON.stringify(data));
+        }
+
+        // Populate choices for voting
+        function populateChoices() {
+            const choicesList = document.getElementById('choicesList');
+            choicesList.innerHTML = '';
+            
+            if (currentBoxIndex === null || currentDeptIndex === null) {
+                choicesList.innerHTML = '<div class="empty-state">Please select a department</div>';
+                return;
+            }
+            
+            const choicesArr = suggestionBoxes[currentBoxIndex]?.multipleChoice?.[currentDeptIndex] || [];
+            
+            if (choicesArr.length === 0) {
+                choicesList.innerHTML = '<div class="empty-state">No multiple choice options for this department</div>';
+                return;
+            }
+            
+            // Get vote data for this instructor
+            const votes = getVoteData();
+            const instructorKey = currentInstructor;
+            const votedIdx = (() => {
+                try {
+                    const dVotes = votes?.[instructorKey]?.[currentBoxIndex]?.[currentDeptIndex];
+                    if (!dVotes) return null;
+                    for (let cIdx in dVotes) {
+                        if (dVotes[cIdx]) return parseInt(cIdx);
+                    }
+                    return null;
+                } catch { 
+                    return null;
+                }
+            })();
+            
+            choicesArr.forEach((choice, cIdx) => {
+                const choiceItem = document.createElement('div');
+                choiceItem.className = 'choice-item';
+                
+                const choiceText = document.createElement('div');
+                choiceText.className = 'choice-text';
+                choiceText.textContent = choice;
+                
+                const voted = votedIdx !== null;
+                const isVoted = votedIdx === cIdx;
+                
+                if (isVoted) {
+                    const badge = document.createElement('div');
+                    badge.className = 'voted-badge';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> Voted';
+                    choiceItem.appendChild(choiceText);
+                    choiceItem.appendChild(badge);
+                } else {
+                    const voteBtn = document.createElement('button');
+                    voteBtn.type = 'button';
+                    voteBtn.className = 'vote-btn';
+                    voteBtn.textContent = voted ? 'Already Voted' : 'Vote';
+                    voteBtn.disabled = voted;
+                    
+                    voteBtn.addEventListener('click', function() {
+                        if (voteBtn.disabled) return;
+                        
+                        // Save vote statistics
+                        const stats = JSON.parse(localStorage.getItem("suggestionstats") || "{}");
+                        const key = `${currentBoxIndex}-${currentDeptIndex}-${cIdx}`;
+                        stats[key] = (stats[key] || 0) + 1;
+                        localStorage.setItem("suggestionstats", JSON.stringify(stats));
+                        
+                        // Save instructor's vote
+                        if (!votes[instructorKey]) votes[instructorKey] = {};
+                        if (!votes[instructorKey][currentBoxIndex]) votes[instructorKey][currentBoxIndex] = {};
+                        if (!votes[instructorKey][currentBoxIndex][currentDeptIndex]) votes[instructorKey][currentBoxIndex][currentDeptIndex] = {};
+                        votes[instructorKey][currentBoxIndex][currentDeptIndex][cIdx] = true;
+                        saveVoteData(votes);
+                        
+                        // Refresh choices
+                        populateChoices();
+                        
+                        showToast('Vote submitted successfully!', 'success');
+                    });
+                    
+                    choiceItem.appendChild(choiceText);
+                    choiceItem.appendChild(voteBtn);
+                }
+                
+                choicesList.appendChild(choiceItem);
+            });
+        }
+
+        // Submit suggestion
+        function submitSuggestion(e) {
+            e.preventDefault();
+            
+            if (currentBoxIndex === null || currentDeptIndex === null) {
+                showToast('Please select a department', 'error');
+                return;
+            }
+            
+            const suggestionText = document.getElementById('instructorSuggestion').value.trim();
+            if (!suggestionText) {
+                showToast('Please enter your suggestion', 'error');
+                return;
+            }
+            
+            let data = getInstructorSuggestions();
+            if (!data[currentBoxIndex]) data[currentBoxIndex] = {};
+            if (!data[currentBoxIndex][currentDeptIndex]) data[currentBoxIndex][currentDeptIndex] = [];
+            
+            data[currentBoxIndex][currentDeptIndex].push({ 
+                text: suggestionText,
+                instructor: currentInstructor,
+                date: new Date().toISOString()
+            });
+            
+            saveInstructorSuggestions(data);
+            document.getElementById('instructorSuggestion').value = "";
+            
+            renderSuggestions();
+            showToast('Suggestion submitted successfully!', 'success');
+        }
+
+        // Render suggestions
+        function renderSuggestions() {
+            const suggestionList = document.getElementById('suggestionList');
+            suggestionList.innerHTML = '';
+            
+            if (currentBoxIndex === null || currentDeptIndex === null) {
+                suggestionList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-slash"></i>
+                        </div>
+                        <p>Please select a department to view suggestions</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const data = getInstructorSuggestions();
+            const suggestions = data[currentBoxIndex]?.[currentDeptIndex] || [];
+            
+            if (suggestions.length === 0) {
+                suggestionList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-slash"></i>
+                        </div>
+                        <p>No suggestions submitted for this department yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            suggestions.forEach((sugg, idx) => {
+                const suggestionCard = document.createElement('div');
+                suggestionCard.className = 'suggestion-card';
+                
+                const date = new Date(sugg.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                suggestionCard.innerHTML = `
+                    <div class="suggestion-header">
+                        <span class="suggestion-number">Suggestion #${idx + 1}</span>
+                        <span class="suggestion-date">${date}</span>
+                    </div>
+                    <div class="suggestion-text">
+                        ${sugg.text}
+                    </div>
+                `;
+                
+                suggestionList.appendChild(suggestionCard);
+            });
+        }
+
+        // Open feedback modal
+        function openFeedbackModal() {
+            if (currentBoxIndex === null || currentDeptIndex === null) {
+                showToast('Please select a department first', 'error');
+                return;
+            }
+            
+            document.getElementById('feedbackModalOverlay').classList.add('active');
+            loadFeedbackMessages();
+            document.getElementById('feedbackInput').value = "";
+        }
+
+        // Close feedback modal
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModalOverlay').classList.remove('active');
+        }
+
+        // Load feedback messages
+        function loadFeedbackMessages() {
+            const chatList = document.getElementById('feedbackChatList');
+            chatList.innerHTML = '';
+            
+            const msgs = getSugMessages();
+            const deptMsgs = msgs[currentBoxIndex]?.[currentDeptIndex] || [];
+            
+            if (deptMsgs.length === 0) {
+                chatList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <p>No feedback yet for this department</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Start the conversation!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            deptMsgs.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.from === 'instructor' ? 'instructor' : 'department'}`;
+                
+                const time = new Date(msg.time).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <span>${msg.from === 'instructor' ? 'You' : suggestionBoxes[currentBoxIndex]?.departments?.[currentDeptIndex] || 'Department'}</span>
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-text">
+                        ${msg.text}
+                    </div>
+                `;
+                
+                chatList.appendChild(messageDiv);
+            });
+            
+            chatList.scrollTop = chatList.scrollHeight;
+        }
+
+        // Submit feedback
+        function submitFeedback(e) {
+            e.preventDefault();
+            
+            const msgText = document.getElementById('feedbackInput').value.trim();
+            if (!msgText) {
+                showToast('Please enter a message', 'error');
+                return;
+            }
+            
+            const msgs = getSugMessages();
+            if (!msgs[currentBoxIndex]) msgs[currentBoxIndex] = {};
+            if (!msgs[currentBoxIndex][currentDeptIndex]) msgs[currentBoxIndex][currentDeptIndex] = [];
+            
+            msgs[currentBoxIndex][currentDeptIndex].push({
+                from: 'instructor',
+                text: msgText,
+                time: new Date().toISOString()
+            });
+            
+            saveSugMessages(msgs);
+            document.getElementById('feedbackInput').value = "";
+            
+            loadFeedbackMessages();
+            showToast('Message sent successfully!', 'success');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                if (document.getElementById('feedbackModalOverlay').classList.contains('active')) {
+                    closeFeedbackModal();
+                }
+            }
+            
+            // Ctrl/Cmd + E to exit box
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                logoutCurrentSystem();
+            }
+        });
+    </script>
+</body>
+</html>

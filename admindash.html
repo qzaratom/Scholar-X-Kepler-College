@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ScholarX Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #00C9B7;
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --sidebar-width: 260px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .admin-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.15);
+            color: white;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .profile-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: var(--gray-dark);
+            font-size: 16px;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius);
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .welcome-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text p {
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        .welcome-stats {
+            display: flex;
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+
+        .stat-icon.system {
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+        }
+
+        .stat-icon.student {
+            background: linear-gradient(135deg, var(--accent) 0%, #2CE0D0 100%);
+        }
+
+        .stat-icon.instructor {
+            background: linear-gradient(135deg, var(--success) 0%, #22C55E 100%);
+        }
+
+        .stat-icon.rating {
+            background: linear-gradient(135deg, var(--warning) 0%, #FBBF24 100%);
+        }
+
+        .stat-icon.feedback {
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+        }
+
+        .stat-icon.trend {
+            background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-dark);
+            font-weight: 500;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .chart-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .system-select {
+            padding: 8px 15px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            color: var(--secondary);
+            background: white;
+            min-width: 250px;
+        }
+
+        .system-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Best Instructors Section */
+        .best-instructors {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .instructor-rankings {
+            display: grid;
+            gap: 15px;
+        }
+
+        .instructor-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .instructor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .instructor-rank {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .instructor-rank.rank-1 {
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+        }
+
+        .instructor-rank.rank-2 {
+            background: linear-gradient(135deg, #94A3B8 0%, #CBD5E1 100%);
+        }
+
+        .instructor-rank.rank-3 {
+            background: linear-gradient(135deg, #92400E 0%, #B45309 100%);
+        }
+
+        .instructor-info {
+            flex: 1;
+        }
+
+        .instructor-name {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .instructor-details {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .instructor-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Recent Systems */
+        .recent-systems {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .section-header p {
+            color: var(--gray-dark);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 111, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--secondary);
+            border: 1px solid var(--gray-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light);
+            border-color: var(--gray);
+        }
+
+        /* Systems Table */
+        .systems-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .systems-table th {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--gray-light);
+            color: var(--gray-dark);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .systems-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .systems-table tr:hover {
+            background: var(--light);
+        }
+
+        .system-name {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .system-course {
+            font-size: 14px;
+            color: var(--gray-dark);
+        }
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(74, 111, 255, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--gray-light);
+            color: var(--secondary);
+        }
+
+        /* Top Feedback */
+        .top-feedback {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .feedback-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+
+        .feedback-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .feedback-content {
+            flex: 1;
+        }
+
+        .feedback-text {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+
+        .feedback-count {
+            font-size: 12px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .action-card h3 {
+            font-size: 16px;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .action-card p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .welcome-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .welcome-stats {
+                justify-content: center;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .system-select {
+                width: 100%;
+            }
+            
+            .systems-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1001;
+                background: white;
+                border: none;
+                width: 44px;
+                height: 44px;
+                border-radius: var(--radius-sm);
+                box-shadow: var(--shadow);
+                font-size: 20px;
+                color: var(--secondary);
+                cursor: pointer;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .instructor-details {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="admin-badge">Institutional Admin</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="admindash.html" class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="suggestionboxe.html" class="nav-item">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestion Box</span>
+            </a>
+            <a href="ratingandfeedback.html" class="nav-item">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </a>
+            <a href="adminLH.html" class="nav-item">
+                <i class="fas fa-book-open"></i>
+                <span>Learning HUB</span>
+            </a>
+            <a href="settingA.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="profilePicture" src="default-avatar.png" alt="Profile" class="profile-pic">
+                <div class="profile-info">
+                    <h4 id="adminName">Loading...</h4>
+                    <p id="adminRole">Administrator</p>
+                    <p id="adminEmail" style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Admin Dashboard</h1>
+                <p>Overview of all rating and feedback systems</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh Data</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Welcome Card -->
+        <div class="welcome-card" id="welcomeCard">
+            <div class="welcome-content">
+                <div class="welcome-text">
+                    <h2>Welcome back, <span id="greetingName">Admin</span>! 👋</h2>
+                    <p>Here's what's happening with your rating systems today.</p>
+                </div>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <h3 id="totalSystems">0</h3>
+                        <p>Active Systems</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="todayFeedback">0</h3>
+                        <p>Today's Feedback</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="avgRating">0.0</h3>
+                        <p>Avg Rating</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-card" onclick="window.location.href='ratingandfeedback.html'">
+                <div class="action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h3>Create New System</h3>
+                <p>Set up a new rating system</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='ratingandfeedback.html'">
+                <div class="action-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>View Reports</h3>
+                <p>Generate detailed reports</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='suggestionboxe.html'">
+                <div class="action-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3>Suggestions</h3>
+                <p>View student suggestions</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='adminLH.html'">
+                <div class="action-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3>Learning Hub</h3>
+                <p>Access learning resources</p>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="statTotalSystems">0</div>
+                        <div class="stat-label">Total Systems</div>
+                    </div>
+                    <div class="stat-icon system">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+                <div class="stat-change positive" id="systemChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0% from last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="statTotalStudents">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-icon student">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                </div>
+                <div class="stat-change positive" id="studentChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0% from last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="statTotalInstructors">0</div>
+                        <div class="stat-label">Total Instructors</div>
+                    </div>
+                    <div class="stat-icon instructor">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                </div>
+                <div class="stat-change positive" id="instructorChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0% from last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="statAvgSystemRating">0.0</div>
+                        <div class="stat-label">Avg System Rating</div>
+                    </div>
+                    <div class="stat-icon rating">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="stat-change positive" id="ratingChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0% from last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="statTotalFeedback">0</div>
+                        <div class="stat-label">Total Feedback</div>
+                    </div>
+                    <div class="stat-icon feedback">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+                <div class="stat-change positive" id="feedbackChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0% from last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="statCompletion">0%</div>
+                        <div class="stat-label">System Completion</div>
+                    </div>
+                    <div class="stat-icon trend">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="stat-change positive" id="completionChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>0% from last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <!-- Main Chart - Ratings For Session Per System -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Ratings For Session Per System</h3>
+                    <div>
+                        <select id="systemSelect" class="system-select" onchange="updateSystemChart()">
+                            <option value="">Select a system...</option>
+                            <!-- Systems will be populated here -->
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="systemChart"></canvas>
+                </div>
+                <div id="chartPlaceholder" style="text-align: center; padding: 40px; color: var(--gray); display: block;">
+                    <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>Select a system from the dropdown to view session ratings</p>
+                </div>
+            </div>
+
+            <!-- Top Feedback -->
+            <div class="top-feedback">
+                <div class="section-header">
+                    <div>
+                        <h3>Top Common Feedbacks</h3>
+                        <p>Most selected by students</p>
+                    </div>
+                </div>
+                <div id="topFeedbacksList">
+                    <!-- Top feedbacks will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Instructors Section -->
+        <div class="best-instructors">
+            <div class="section-header">
+                <div>
+                    <h2>Top Performing Instructors</h2>
+                    <p>Ranked by overall ratings across all systems</p>
+                </div>
+            </div>
+            <div class="instructor-rankings" id="instructorRankings">
+                <!-- Instructor rankings will be populated here -->
+            </div>
+        </div>
+
+        <!-- Recent Systems -->
+        <div class="recent-systems">
+            <div class="section-header">
+                <div>
+                    <h2>Recent Rating Systems</h2>
+                    <p>Latest systems with activity</p>
+                </div>
+                <a href="ratingandfeedback.html" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i>
+                    <span>View All</span>
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="systems-table">
+                    <thead>
+                        <tr>
+                            <th>System Name</th>
+                            <th>Course</th>
+                            <th>Students</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentSystemsTable">
+                        <!-- Recent systems will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">
+            <i class="fas fa-check-circle"></i>
+            <span id="toastMessage">Operation completed successfully!</span>
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let ratingSystems = [];
+        let systemChart = null;
+        let dashboardData = {
+            previousMonth: {
+                systems: 0,
+                students: 0,
+                instructors: 0,
+                rating: 0,
+                feedback: 0
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user from login data
+            loadUserFromLogin();
+            
+            // Load rating systems data
+            loadRatingSystems();
+            
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menuToggle');
+                
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        // Load user from login.html data
+        function loadUserFromLogin() {
+            try {
+                // Try to get user data from localStorage (set by login.html)
+                const userData = localStorage.getItem('currentUser');
+                const kcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+                
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                } else if (kcdata.length > 0) {
+                    // If no current user, try to find admin user in kcdata
+                    currentUser = kcdata.find(user => user.role === 'admin') || kcdata[0];
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+                
+                // Update UI with user data
+                if (currentUser) {
+                    document.getElementById('adminName').textContent = 
+                        currentUser.name || currentUser.username || 'Admin User';
+                    document.getElementById('adminRole').textContent = 
+                        currentUser.role || 'Administrator';
+                    document.getElementById('adminEmail').textContent = 
+                        currentUser.email || '';
+                    document.getElementById('greetingName').textContent = 
+                        currentUser.name?.split(' ')[0] || currentUser.username || 'Admin';
+                    
+                    // Set profile picture if available
+                    if (currentUser.profilePic) {
+                        document.getElementById('profilePicture').src = currentUser.profilePic;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                document.getElementById('adminName').textContent = 'Administrator';
+            }
+        }
+
+        // Load rating systems data
+        function loadRatingSystems() {
+            try {
+                const stored = JSON.parse(localStorage.getItem('ratingSystems') || '[]');
+                ratingSystems = stored;
+                
+                // Load previous month data for comparison
+                const storedDashboardData = JSON.parse(localStorage.getItem('dashboardData') || '{}');
+                if (storedDashboardData.previousMonth) {
+                    dashboardData.previousMonth = storedDashboardData.previousMonth;
+                }
+                
+                // Update dashboard
+                updateDashboard();
+            } catch (error) {
+                console.error('Error loading rating systems:', error);
+                showToast('Error loading data. Please refresh.', 'error');
+            }
+        }
+
+        // Update dashboard with real data
+        function updateDashboard() {
+            // Calculate statistics from real data
+            const totalSystems = ratingSystems.length;
+            const totalStudents = ratingSystems.reduce((sum, system) => sum + (system.students?.length || 0), 0);
+            const totalInstructors = ratingSystems.reduce((sum, system) => sum + (system.instructors?.length || 0), 0);
+            
+            // Calculate average rating
+            let totalRating = 0;
+            let ratedSystems = 0;
+            ratingSystems.forEach(system => {
+                if (system.ratings) {
+                    Object.values(system.ratings).forEach(session => {
+                        if (session.averageRating > 0) {
+                            totalRating += session.averageRating;
+                            ratedSystems++;
+                        }
+                    });
+                }
+            });
+            const avgRating = ratedSystems > 0 ? (totalRating / ratedSystems) : 0;
+            
+            // Calculate total feedback
+            let totalFeedback = 0;
+            ratingSystems.forEach(system => {
+                if (system.ratings) {
+                    Object.values(system.ratings).forEach(session => {
+                        // Count written feedback
+                        totalFeedback += session.studentFeedback?.length || 0;
+                        // Count selected feedbacks
+                        if (session.selectedFeedbacks) {
+                            Object.values(session.selectedFeedbacks).forEach(count => {
+                                totalFeedback += count;
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Calculate today's feedback (mock - in real app, would filter by date)
+            const todayFeedback = Math.floor(totalFeedback * 0.1); // 10% of total for demo
+            
+            // Calculate system completion rate
+            let completedSessions = 0;
+            let totalSessions = 0;
+            ratingSystems.forEach(system => {
+                totalSessions += system.sessions?.length || 0;
+                if (system.ratings) {
+                    completedSessions += Object.keys(system.ratings).length;
+                }
+            });
+            const completionRate = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+            
+            // Update welcome card
+            document.getElementById('totalSystems').textContent = totalSystems;
+            document.getElementById('todayFeedback').textContent = todayFeedback;
+            document.getElementById('avgRating').textContent = avgRating.toFixed(1);
+            
+            // Update stats grid
+            document.getElementById('statTotalSystems').textContent = totalSystems;
+            document.getElementById('statTotalStudents').textContent = totalStudents;
+            document.getElementById('statTotalInstructors').textContent = totalInstructors;
+            document.getElementById('statAvgSystemRating').textContent = avgRating.toFixed(1);
+            document.getElementById('statTotalFeedback').textContent = totalFeedback;
+            document.getElementById('statCompletion').textContent = `${completionRate}%`;
+            
+            // Calculate percentage changes
+            updatePercentageChanges(totalSystems, totalStudents, totalInstructors, avgRating, totalFeedback);
+            
+            // Update system dropdown for chart
+            updateSystemDropdown();
+            
+            // Update recent systems table
+            updateRecentSystems();
+            
+            // Update top feedbacks
+            updateTopFeedbacks();
+            
+            // Update instructor rankings
+            updateInstructorRankings();
+            
+            // Save current data as previous month data for next time
+            saveDashboardData(totalSystems, totalStudents, totalInstructors, avgRating, totalFeedback);
+        }
+
+        // Update system dropdown for chart selection
+        function updateSystemDropdown() {
+            const select = document.getElementById('systemSelect');
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Add systems to dropdown
+            ratingSystems.forEach((system, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${system.systemName} (${system.courseName})`;
+                select.appendChild(option);
+            });
+            
+            // If there are systems, select the first one
+            if (ratingSystems.length > 0) {
+                select.value = 0;
+                updateSystemChart();
+            }
+        }
+
+       // Update chart for selected system
+function updateSystemChart() {
+    const select = document.getElementById('systemSelect');
+    const systemIndex = parseInt(select.value);
+    const placeholder = document.getElementById('chartPlaceholder');
+    
+    if (isNaN(systemIndex) || systemIndex < 0) {
+        // Hide chart, show placeholder
+        placeholder.style.display = 'block';
+        if (systemChart) {
+            systemChart.destroy();
+            systemChart = null;
+        }
+        return;
+    }
+    
+    const system = ratingSystems[systemIndex];
+    
+    // Hide placeholder
+    placeholder.style.display = 'none';
+    
+    // Get session ratings data
+    const sessionNames = system.sessions || [];
+    const sessionRatings = sessionNames.map(sessionName => {
+        const sessionData = system.ratings?.[sessionName];
+        return sessionData ? (sessionData.averageRating || 0) : 0;
+    });
+    
+    // Create or update chart
+    const ctx = document.getElementById('systemChart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (systemChart) {
+        systemChart.destroy();
+    }
+    
+    // Create line chart
+    systemChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: sessionNames.map((name, index) => `Session ${index + 1}: ${name}`),
+            datasets: [{
+                label: 'Session Rating',
+                data: sessionRatings,
+                backgroundColor: 'rgba(74, 111, 255, 0.1)',
+                borderColor: 'rgb(74, 111, 255)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: sessionRatings.map(rating => {
+                    // Color points based on rating
+                    if (rating >= 4) return 'rgb(16, 185, 129)'; // Green for high ratings
+                    if (rating >= 3) return 'rgb(245, 158, 11)'; // Yellow for medium ratings
+                    return 'rgb(239, 68, 68)'; // Red for low ratings
+                }),
+                pointBorderColor: 'rgb(255, 255, 255)',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 5,
+                    ticks: {
+                        stepSize: 0.5
+                    },
+                    title: {
+                        display: true,
+                        text: 'Rating (out of 5)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Sessions',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(26, 31, 54, 0.9)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            return `Rating: ${context.raw.toFixed(1)}/5.0`;
+                        },
+                        title: function(context) {
+                            return context[0].label;
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'nearest'
+            },
+            elements: {
+                line: {
+                    tension: 0.4 // Smooth curve
+                }
+            }
+        }
+    });
+}
+        // Update instructor rankings
+        function updateInstructorRankings() {
+            const container = document.getElementById('instructorRankings');
+            
+            // Collect all instructors with their ratings across all systems
+            const instructorScores = {};
+            
+            ratingSystems.forEach(system => {
+                if (system.instructors && system.ratings) {
+                    system.instructors.forEach(instructor => {
+                        if (!instructorScores[instructor.code]) {
+                            instructorScores[instructor.code] = {
+                                name: instructor.name,
+                                code: instructor.code,
+                                totalRating: 0,
+                                ratedSessions: 0,
+                                systems: []
+                            };
+                        }
+                        
+                        // Add system to instructor's list
+                        instructorScores[instructor.code].systems.push({
+                            name: system.systemName,
+                            rating: calculateSystemRating(system)
+                        });
+                        
+                        // Calculate average rating for this instructor across all sessions
+                        let total = 0;
+                        let count = 0;
+                        
+                        system.sessions.forEach(sessionName => {
+                            const sessionData = system.ratings?.[sessionName];
+                            if (sessionData && sessionData.instructorRatings) {
+                                const rating = sessionData.instructorRatings[instructor.code] || 0;
+                                if (rating > 0) {
+                                    total += rating;
+                                    count++;
+                                }
+                            }
+                        });
+                        
+                        if (count > 0) {
+                            instructorScores[instructor.code].totalRating += total;
+                            instructorScores[instructor.code].ratedSessions += count;
+                        }
+                    });
+                }
+            });
+            
+            // Convert to array and calculate averages
+            const instructors = Object.values(instructorScores)
+                .filter(instructor => instructor.ratedSessions > 0)
+                .map(instructor => ({
+                    ...instructor,
+                    averageRating: instructor.totalRating / instructor.ratedSessions,
+                    systemCount: instructor.systems.length
+                }))
+                .sort((a, b) => b.averageRating - a.averageRating)
+                .slice(0, 5); // Top 5 instructors
+            
+            if (instructors.length > 0) {
+                container.innerHTML = '';
+                
+                instructors.forEach((instructor, index) => {
+                    const rank = index + 1;
+                    const card = document.createElement('div');
+                    card.className = 'instructor-card';
+                    card.innerHTML = `
+                        <div class="instructor-rank rank-${rank}">
+                            ${rank}
+                        </div>
+                        <div class="instructor-info">
+                            <div class="instructor-name">${instructor.name}</div>
+                            <div class="instructor-details">
+                                <span>ID: ${instructor.code}</span>
+                                <span>Systems: ${instructor.systemCount}</span>
+                                <span>Sessions: ${instructor.ratedSessions}</span>
+                            </div>
+                        </div>
+                        <div class="instructor-rating">
+                            <i class="fas fa-star"></i>
+                            <span>${instructor.averageRating.toFixed(1)}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--gray);">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 36px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <p>No instructor ratings available yet</p>
+                        <p style="font-size: 12px; margin-top: 5px;">Ratings will appear once systems have feedback</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update percentage changes
+        function updatePercentageChanges(systems, students, instructors, rating, feedback) {
+            const prev = dashboardData.previousMonth;
+            
+            // Calculate percentages
+            const systemPercent = prev.systems > 0 ? Math.round(((systems - prev.systems) / prev.systems) * 100) : 100;
+            const studentPercent = prev.students > 0 ? Math.round(((students - prev.students) / prev.students) * 100) : 100;
+            const instructorPercent = prev.instructors > 0 ? Math.round(((instructors - prev.instructors) / prev.instructors) * 100) : 100;
+            const ratingPercent = prev.rating > 0 ? Math.round(((rating - prev.rating) / prev.rating) * 100) : 100;
+            const feedbackPercent = prev.feedback > 0 ? Math.round(((feedback - prev.feedback) / prev.feedback) * 100) : 100;
+            
+            // Update UI
+            updateChangeElement('systemChange', systemPercent);
+            updateChangeElement('studentChange', studentPercent);
+            updateChangeElement('instructorChange', instructorPercent);
+            updateChangeElement('ratingChange', ratingPercent);
+            updateChangeElement('feedbackChange', feedbackPercent);
+            
+            // For completion, use average of other metrics
+            const completionPercent = Math.round((systemPercent + studentPercent + ratingPercent) / 3);
+            updateChangeElement('completionChange', completionPercent);
+        }
+
+        // Update change element
+        function updateChangeElement(elementId, percent) {
+            const element = document.getElementById(elementId);
+            const arrow = element.querySelector('i');
+            const span = element.querySelector('span');
+            
+            element.className = 'stat-change ' + (percent >= 0 ? 'positive' : 'negative');
+            arrow.className = percent >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+            span.textContent = `${Math.abs(percent)}% from last month`;
+        }
+
+        // Save dashboard data for comparison
+        function saveDashboardData(systems, students, instructors, rating, feedback) {
+            dashboardData.previousMonth = {
+                systems,
+                students,
+                instructors,
+                rating,
+                feedback
+            };
+            localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+        }
+
+        // Update recent systems table
+        function updateRecentSystems() {
+            const tableBody = document.getElementById('recentSystemsTable');
+            
+            if (ratingSystems.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-star" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                            <p>No rating systems created yet</p>
+                            <button class="btn btn-primary" onclick="window.location.href='ratingandfeedback.html'" 
+                                    style="margin-top: 15px; padding: 8px 16px;">
+                                Create Your First System
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort systems by updated date (most recent first)
+            const sortedSystems = [...ratingSystems].sort((a, b) => {
+                return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
+            }).slice(0, 5); // Show only 5 most recent
+            
+            tableBody.innerHTML = '';
+            sortedSystems.forEach((system, index) => {
+                const avgRating = calculateSystemRating(system);
+                const updatedDate = new Date(system.updatedAt || system.createdAt);
+                const formattedDate = updatedDate.toLocaleDateString();
+                
+                // Determine status based on activity
+                const daysSinceUpdate = Math.floor((new Date() - updatedDate) / (1000 * 60 * 60 * 24));
+                const status = daysSinceUpdate < 7 ? 'Active' : 'Pending';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="system-name">${system.systemName}</div>
+                        <div class="system-course">${system.courseName}</div>
+                    </td>
+                    <td>${system.courseName}</td>
+                    <td>${system.students?.length || 0}</td>
+                    <td>
+                        <div class="rating-badge">
+                            <i class="fas fa-star"></i>
+                            <span>${avgRating.toFixed(1)}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${status.toLowerCase()}">${status}</span>
+                    </td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewSystem(${index})" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn" onclick="editSystem(${index})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Calculate system rating
+        function calculateSystemRating(system) {
+            if (!system.ratings) return 0;
+            
+            let total = 0;
+            let count = 0;
+            
+            Object.values(system.ratings).forEach(session => {
+                total += session.averageRating || 0;
+                count++;
+            });
+            
+            return count > 0 ? total / count : 0;
+        }
+
+        // Update top feedbacks
+        function updateTopFeedbacks() {
+            const container = document.getElementById('topFeedbacksList');
+            
+            // Aggregate all selected feedbacks across all systems
+            const allFeedbacks = {};
+            ratingSystems.forEach(system => {
+                if (system.ratings) {
+                    Object.values(system.ratings).forEach(session => {
+                        if (session.selectedFeedbacks) {
+                            Object.entries(session.selectedFeedbacks).forEach(([feedback, count]) => {
+                                if (count > 0) {
+                                    allFeedbacks[feedback] = (allFeedbacks[feedback] || 0) + count;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Sort by count and get top 5
+            const topFeedbacks = Object.entries(allFeedbacks)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            if (topFeedbacks.length > 0) {
+                container.innerHTML = '';
+                topFeedbacks.forEach(([feedback, count], index) => {
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = 'feedback-item';
+                    feedbackItem.innerHTML = `
+                        <div class="feedback-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="feedback-content">
+                            <div class="feedback-text">${feedback}</div>
+                            <div class="feedback-count">
+                                <i class="fas fa-users"></i>
+                                <span>Selected by ${count} student${count !== 1 ? 's' : ''}</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(feedbackItem);
+                });
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--gray);">
+                        <i class="fas fa-comments" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>No common feedbacks selected yet</p>
+                    </div>
+                `;
+            }
+        }
+
+        // View system (redirect to rating page)
+        function viewSystem(index) {
+            // Store the index to view in sessionStorage
+            sessionStorage.setItem('viewSystemIndex', index);
+            // Redirect to rating page
+            window.location.href = 'ratingandfeedback.html';
+        }
+
+        // Edit system (redirect to rating page)
+        function editSystem(index) {
+            // Store the index to edit in sessionStorage
+            sessionStorage.setItem('editSystemIndex', index);
+            // Redirect to rating page
+            window.location.href = 'ratingandfeedback.html';
+        }
+
+        // Refresh data
+        function refreshData() {
+            loadRatingSystems();
+            showToast('Data refreshed successfully!', 'success');
+        }
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Navigation functions
+        function navigateToAdminDashboard() { 
+            window.location.href = 'Admindashboard.html'; 
+        }
+        
+        function navigateToSuggestionBox() { 
+            window.location.href = 'suggestionboxe.html'; 
+        }
+        
+        function navigateToRatingFeedback() { 
+            window.location.href = 'ratingandfeedback.html'; 
+        }
+        
+        function navigateToLearningHub() { 
+            window.location.href = 'adminLH.html'; 
+        }
+        
+        function navigateToSettings() { 
+            window.location.href = 'settingA.html'; 
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                sessionStorage.clear();
+                showToast('Logged out successfully', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'loginAdmin.html';
+                }, 1500);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast' + (type === 'error' ? ' error' : '');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auto-refresh data every 5 minutes
+        setInterval(refreshData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

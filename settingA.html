@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ScholarX Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1A1F36;
+            --secondary-color: #1A1F36;
+            --accent-color: #1A1F36;
+            --light-color: #1A1F36;
+            --dark-color: #1A1F36;
+            --gray-color: #6c757d;
+            --light-gray: #e9ecef;
+            --success-color: #38b000;
+            --warning-color: #ff9e00;
+            --danger-color: #ef233c;
+            --sidebar-width: 260px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary-color) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .admin-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-gray);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.15);
+            color: white;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+        }
+
+        .profile-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 35, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 35, 60, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 35, 60, 0.2);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: 20px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .header-content p {
+            color: var(--gray-color);
+            font-size: 16px;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        /* Settings Card */
+        .settings-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .settings-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+
+        .card-icon.profile {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #6C8BFF 100%);
+        }
+
+        .card-icon.security {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff4da6 100%);
+        }
+
+        .card-icon.backup {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #FBBF24 100%);
+        }
+
+        .card-icon.danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #DC2626 100%);
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        /* Database Form Styles (Using Kepler College Database Form) */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-label.required:after {
+            content: '*';
+            color: var(--danger-color);
+        }
+
+        .form-input, .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 23, 68, 0.2);
+        }
+
+        .form-input:disabled, .form-select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .profile-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed var(--light-gray);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .profile-upload:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(30, 23, 68, 0.05);
+        }
+
+        .profile-upload i {
+            font-size: 3rem;
+            color: var(--gray-color);
+            margin-bottom: 15px;
+        }
+
+        .profile-upload span {
+            color: var(--gray-color);
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 23, 68, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2a2166, #2a2166);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 23, 68, 0.3);
+        }
+
+        .btn-save {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dde1e7;
+        }
+
+        .btn-danger {
+            background: rgba(239, 35, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 35, 60, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 35, 60, 0.2);
+        }
+
+        .btn-warning {
+            background: rgba(255, 158, 0, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(255, 158, 0, 0.2);
+        }
+
+        .btn-warning:hover {
+            background: rgba(255, 158, 0, 0.2);
+        }
+
+        /* Profile Picture Preview */
+        #profilePreview {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        #previewImage {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(239, 35, 60, 0.2);
+            max-width: 100%;
+        }
+
+        .danger-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(239, 35, 60, 0.1);
+        }
+
+        .danger-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #DC2626 100%);
+        }
+
+        .danger-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--danger-color);
+        }
+
+        .danger-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(239, 35, 60, 0.05);
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+        }
+
+        .danger-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .danger-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 4px;
+        }
+
+        .danger-info p {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark-color);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        .toast.warning {
+            background: var(--warning-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .danger-item {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-card {
+                padding: 20px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .form-input, .form-select {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 100&quot;%3E%3Crect width=&quot;100&quot; height=&quot;100&quot; fill=&quot;%231e1744&quot;/%3E%3Ctext x=&quot;50&quot; y=&quot;60&quot; font-family=&quot;Arial&quot; font-size=&quot;40&quot; fill=&quot;white&quot; text-anchor=&quot;middle&quot;%3ESX%3C/text%3E%3C/svg%3E';">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="admin-badge">Institutional Admin</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="admindash.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="suggestionboxe.html" class="nav-item">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestion Box</span>
+            </a>
+            <a href="ratingandfeedback.html" class="nav-item">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </a>
+            <a href="adminLH.html" class="nav-item">
+                <i class="fas fa-book-open"></i>
+                <span>Learning HUB</span>
+            </a>
+            <a href="settingA.html" class="nav-item active">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="sidebarProfilePic" src="default-avatar.png" alt="Profile" class="profile-pic" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ccircle%20cx=%2250%22%20cy=%2250%22%20r=%2245%22%20fill=%22%231e1744%22/%3E%3Ctext%20x=%2250%22%20y=%2260%22%20font-family=%22Arial%22%20font-size=%2240%22%20fill=%22white%22%20text-anchor=%22middle%22%3EA%3C/text%3E%3C/svg%3E'">
+                <div class="profile-info">
+                    <h4 id="sidebarUserName">Administrator</h4>
+                    <p id="sidebarUserRole">Super Admin</p>
+                    <p id="sidebarUserEmail" style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;"></p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1>Account Settings</h1>
+                <p>Manage your account information and preferences</p>
+            </div>
+            <div class="header-actions">
+                <div class="date-display" style="background: white; padding: 12px 20px; border-radius: var(--radius-sm); border: 1px solid var(--light-gray);">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Information Card (Using Kepler College Database Form) -->
+        <div class="settings-grid">
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon profile">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2>Edit Account Information</h2>
+                </div>
+
+                <form id="entryForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-portrait"></i>
+                                Profile Picture
+                            </label>
+                            <div class="profile-upload" id="profileUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload profile picture</span>
+                                <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div id="profilePreview" style="display: none; text-align: center; margin-top: 15px;">
+                                <img id="previewImage" src="" alt="Preview" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-id-card"></i>
+                                Registration Number
+                            </label>
+                            <input type="text" class="form-input" id="regNumber" required disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-user"></i>
+                                Full Name
+                            </label>
+                            <input type="text" class="form-input" id="fullName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" class="form-input" id="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-key"></i>
+                                Password
+                            </label>
+                            <input type="text" class="form-input" id="password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-book"></i>
+                                Course/Department
+                            </label>
+                            <input type="text" class="form-input" id="courseDept" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-calendar-alt"></i>
+                                Year
+                            </label>
+                            <select class="form-select" id="year" required>
+                                <option value="">Select Year</option>
+                                <option value="Year 24">Year 24</option>
+                                <option value="Year 25">Year 25</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-layer-group"></i>
+                                Portal Category
+                            </label>
+                            <select class="form-select" id="category" required disabled>
+                                <option value="">Select Category</option>
+                                <option value="Departments">Departments</option>
+                                <option value="Students">Students</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Instructor">Instructor</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-save" onclick="saveEntry()">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Data Backup Card -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon backup">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h2>Data Backup & Export</h2>
+                </div>
+
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h4>Download All Data</h4>
+                        <p>Export all your data including user profile, ratings, feedback, and system data</p>
+                    </div>
+                    <button class="btn btn-warning" onclick="downloadAllData()">
+                        <i class="fas fa-download"></i>
+                        Download Backup
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 158, 0, 0.05); border-radius: var(--radius-sm);">
+                    <p style="color: var(--gray-color); font-size: 14px; display: flex; align-items: flex-start; gap: 10px;">
+                        <i class="fas fa-info-circle" style="color: var(--warning-color); margin-top: 2px;"></i>
+                        <span><strong>Note:</strong> This will download a JSON file containing all your application data. Keep this file safe for backup purposes or when migrating to a new system.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <div class="danger-header">
+                <div class="danger-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>Danger Zone</h2>
+            </div>
+
+            <div class="danger-item">
+                <div class="danger-info">
+                    <h4>Delete Account</h4>
+                    <p>Permanently delete your account and all associated data</p>
+                </div>
+                <button class="btn btn-danger" onclick="showDeleteAccountModal()">
+                    <i class="fas fa-user-slash"></i>
+                    Delete Account
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Delete Account</h2>
+                <button class="close-modal" onclick="closeDeleteAccountModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <i class="fas fa-user-slash" style="font-size: 48px; color: var(--danger-color); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 15px; color: var(--dark-color);">Permanently Delete Your Account</h3>
+                    <p style="color: var(--gray-color); line-height: 1.6;">
+                        This action will:<br>
+                        • Permanently delete your administrator account<br>
+                        • Remove all your personal data from the system<br>
+                        • Delete all suggestion boxes you created<br>
+                        • Remove all ratings and feedback associated with your account<br>
+                        • Revoke your access immediately<br>
+                        <strong style="color: var(--danger-color); display: block; margin-top: 15px; padding: 10px; background: rgba(239, 35, 60, 0.05); border-radius: var(--radius-sm);">
+                            ⚠️ This action cannot be undone!
+                        </strong>
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key" style="margin-right: 8px;"></i>
+                        Enter your password to confirm:
+                    </label>
+                    <input type="password" id="deleteAccountPassword" class="form-input" placeholder="Enter your current password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                        Type "DELETE MY ACCOUNT" to confirm:
+                    </label>
+                    <input type="text" id="deleteAccountConfirm" class="form-input" placeholder="DELETE MY ACCOUNT">
+                </div>
+                <div class="form-group" style="background: rgba(239, 35, 60, 0.05); padding: 15px; border-radius: var(--radius-sm); border-left: 4px solid var(--danger-color); margin-top: 20px;">
+                    <p style="color: var(--danger-color); font-size: 14px; display: flex; align-items: flex-start; gap: 10px;">
+                        <i class="fas fa-info-circle" style="margin-top: 2px;"></i>
+                        <span><strong>Note:</strong> Account deletion is permanent. If you just need to change roles or access permissions, please contact system support instead.</span>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteAccountModal()">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button class="btn btn-danger" onclick="deleteAccount()">
+                    <i class="fas fa-user-slash"></i>
+                    Delete Account Permanently
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fas fa-check-circle"></i>
+        <span id="toastMessage">Settings updated successfully!</span>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let kcdata = [];
+        let profileImageBase64 = '';
+
+        // Initialize on page load - FIXED VERSION (same as Suggestion Box page)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user data from kcdata array FIRST
+            loadUserFromKCData();
+            
+            // NOW check authentication with the loaded user (using the simpler fix)
+            checkAuthentication();
+            
+            // Set current date
+            setCurrentDate();
+            
+            // Load the current user
+            loadCurrentUser();
+            
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Setup profile picture upload
+            setupProfileUpload();
+            
+            // Listen for storage changes from other tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'currentUser' || e.key === 'kcdata' || e.key === 'admins') {
+                    loadUserFromKCData();
+                    loadCurrentUser();
+                }
+            });
+        });
+
+        // Load user from kcdata array
+        function loadUserFromKCData() {
+            try {
+                // Try to get kcdata from localStorage
+                const storedKCData = localStorage.getItem('kcdata');
+                if (storedKCData) {
+                    kcdata = JSON.parse(storedKCData);
+                }
+                
+                // Try to get current user from localStorage
+                const currentUserData = localStorage.getItem('currentUser');
+                if (currentUserData) {
+                    currentUser = JSON.parse(currentUserData);
+                } else if (kcdata.length > 0) {
+                    // If no current user, use the first admin account from kcdata
+                    currentUser = kcdata.find(user => user.category === 'Administrator') || kcdata[0];
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            } catch (error) {
+                console.error('Error loading user data from kcdata:', error);
+            }
+        }
+
+        // Check authentication - SIMPLIFIED VERSION
+        function checkAuthentication() {
+            // Check if we have any user authentication
+            const hasCurrentUser = currentUser || localStorage.getItem('currentUser');
+            const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+            
+            // Allow access if we have a user OR if authenticated in session
+            if (!hasCurrentUser && isAuthenticated !== 'true') {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Set current date
+        function setCurrentDate() {
+            const currentDate = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', options);
+        }
+
+        // LOAD CURRENT USER
+        function loadCurrentUser() {
+            console.log('Loading current user from storage...');
+            
+            // Load kcdata array from localStorage
+            loadKCData();
+            
+            // Get current user from localStorage
+            const storedCurrentUser = localStorage.getItem('currentUser');
+            
+            if (storedCurrentUser) {
+                try {
+                    currentUser = JSON.parse(storedCurrentUser);
+                    console.log('Found user in currentUser:', currentUser);
+                    
+                    // Update user data from kcdata if needed
+                    if (kcdata.length > 0) {
+                        const kcUser = kcdata.find(user => 
+                            user.regNumber === currentUser.regNumber || 
+                            user.email === currentUser.email
+                        );
+                        
+                        if (kcUser) {
+                            // Merge data from kcdata
+                            currentUser = { ...currentUser, ...kcUser };
+                            console.log('Enhanced user from kcdata:', currentUser);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing currentUser:', e);
+                }
+            }
+            
+            // If no currentUser found, check kcdata array
+            if (!currentUser || !currentUser.email) {
+                const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+                
+                if (isAuthenticated === 'true' && kcdata.length > 0) {
+                    // Try to get user from email
+                    const adminEmail = localStorage.getItem('adminEmail');
+                    
+                    if (adminEmail) {
+                        // Find user by email in kcdata array
+                        const user = kcdata.find(u => u.email === adminEmail);
+                        if (user) {
+                            currentUser = {
+                                regNumber: user.regNumber,
+                                fullName: user.fullName,
+                                email: user.email,
+                                password: user.password,
+                                courseDept: user.courseDept,
+                                year: user.year,
+                                category: user.category,
+                                profilePic: user.profilePic,
+                                role: user.category // Using category as role
+                            };
+                            console.log('Found user in kcdata array:', currentUser);
+                        }
+                    }
+                }
+            }
+            
+            // If still no user, use default
+            if (!currentUser || !currentUser.email) {
+                console.log('No user found, using default administrator');
+                currentUser = {
+                    regNumber: 'KCADMIN001',
+                    fullName: 'Administrator',
+                    email: 'admin@scholarx.edu',
+                    password: 'Admin@Secure',
+                    courseDept: 'Administration',
+                    year: 'Year 25',
+                    category: 'Administrator',
+                    profilePic: '',
+                    role: 'Administrator'
+                };
+            }
+            
+            // Save current user for consistency
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Display the user data in the Kepler College Database form
+            displayUserDataInForm();
+        }
+
+        // Load kcdata array from localStorage
+        function loadKCData() {
+            try {
+                const storedKCData = localStorage.getItem('kcdata');
+                if (storedKCData) {
+                    kcdata = JSON.parse(storedKCData);
+                    console.log('Loaded kcdata array:', kcdata);
+                } else {
+                    console.log('No kcdata found, initializing empty array');
+                    kcdata = [];
+                }
+            } catch (e) {
+                console.error('Error loading kcdata:', e);
+                kcdata = [];
+            }
+        }
+
+        // DISPLAY USER DATA IN THE KEPLER COLLEGE DATABASE FORM
+        function displayUserDataInForm() {
+            if (!currentUser) return;
+            
+            console.log('Displaying user data in form:', currentUser);
+            
+            // Update form fields with current user data
+            document.getElementById('regNumber').value = currentUser.regNumber || '';
+            document.getElementById('fullName').value = currentUser.fullName || '';
+            document.getElementById('email').value = currentUser.email || '';
+            document.getElementById('password').value = currentUser.password || '';
+            document.getElementById('courseDept').value = currentUser.courseDept || '';
+            document.getElementById('year').value = currentUser.year || '';
+            document.getElementById('category').value = currentUser.category || '';
+            
+            // Update sidebar
+            document.getElementById('sidebarUserName').textContent = currentUser.fullName || 'Administrator';
+            document.getElementById('sidebarUserRole').textContent = currentUser.category || 'Administrator';
+            const sidebarEmail = document.getElementById('sidebarUserEmail');
+            if (sidebarEmail) {
+                sidebarEmail.textContent = currentUser.email || '';
+            }
+            
+            // Update profile picture
+            updateProfilePictureDisplay();
+            
+            // Update profile preview if user has a profile picture
+            if (currentUser.profilePic) {
+                document.getElementById('previewImage').src = currentUser.profilePic;
+                document.getElementById('profilePreview').style.display = 'block';
+            }
+        }
+
+        // Update profile picture display
+        function updateProfilePictureDisplay() {
+            const sidebarPic = document.getElementById('sidebarProfilePic');
+            
+            if (currentUser.profilePic) {
+                // Show profile picture if it exists
+                sidebarPic.src = currentUser.profilePic;
+            } else {
+                // Show initials avatar
+                const initials = currentUser.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'A';
+                sidebarPic.src = `data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ccircle%20cx=%2250%22%20cy=%2250%22%20r=%2245%22%20fill=%22%231e1744%22/%3E%3Ctext%20x=%2250%22%20y=%2260%22%20font-family=%22Arial%22%20font-size=%2240%22%20fill=%22white%22%20text-anchor=%22middle%22%3E${initials}%3C/text%3E%3C/svg%3E`;
+            }
+            
+            sidebarPic.onerror = function() {
+                this.src = `data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ccircle%20cx=%2250%22%20cy=%2250%22%20r=%2245%22%20fill=%22%231e1744%22/%3E%3Ctext%20x=%2250%22%20y=%2260%22%20font-family=%22Arial%22%20font-size=%2240%22%20fill=%22white%22%20text-anchor=%22middle%22%3E${currentUser.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'A'}%3C/text%3E%3C/svg%3E`;
+            };
+        }
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Setup profile picture upload
+        function setupProfileUpload() {
+            const profileUpload = document.getElementById('profileUpload');
+            const profilePicInput = document.getElementById('profilePicInput');
+            
+            profileUpload.addEventListener('click', function() {
+                profilePicInput.click();
+            });
+            
+            profilePicInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        profileImageBase64 = event.target.result;
+                        document.getElementById('previewImage').src = profileImageBase64;
+                        document.getElementById('profilePreview').style.display = 'block';
+                        showToast('Profile picture updated! Click "Save Changes" to save.', 'success');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // SAVE ENTRY - Using Kepler College Database form logic
+        function saveEntry() {
+            if (!currentUser) {
+                showToast('No user found. Please log in again.', 'error');
+                return;
+            }
+            
+            // Get form values
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const courseDept = document.getElementById('courseDept').value.trim();
+            const year = document.getElementById('year').value;
+            const regNumber = document.getElementById('regNumber').value.trim();
+            const category = document.getElementById('category').value;
+            
+            // Validation
+            if (!fullName || !email || !password || !courseDept || !year || !regNumber || !category) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+            
+            // Load kcdata array
+            loadKCData();
+            
+            // Find current user in kcdata array
+            const userIndex = kcdata.findIndex(u => 
+                u.regNumber === currentUser.regNumber || 
+                u.email === currentUser.email
+            );
+            
+            if (userIndex === -1) {
+                // User not found in kcdata, create new entry
+                const newEntry = {
+                    regNumber: regNumber,
+                    fullName: fullName,
+                    email: email,
+                    password: password,
+                    courseDept: courseDept,
+                    year: year,
+                    category: category,
+                    profilePic: profileImageBase64 || currentUser.profilePic || ""
+                };
+                
+                kcdata.push(newEntry);
+                console.log('Added new user to kcdata:', newEntry);
+            } else {
+                // Check if email is being changed to one that already exists
+                if (email !== currentUser.email) {
+                    const emailExists = kcdata.some(u => u.email === email && u.regNumber !== currentUser.regNumber);
+                    if (emailExists) {
+                        showToast('Email already exists. Please use a different email.', 'error');
+                        return;
+                    }
+                }
+                
+                // Update user in kcdata array
+                kcdata[userIndex] = {
+                    ...kcdata[userIndex],
+                    fullName: fullName,
+                    email: email,
+                    password: password,
+                    courseDept: courseDept,
+                    year: year,
+                    profilePic: profileImageBase64 || kcdata[userIndex].profilePic
+                };
+                console.log('Updated user in kcdata:', kcdata[userIndex]);
+            }
+            
+            // Save updated kcdata array
+            localStorage.setItem('kcdata', JSON.stringify(kcdata));
+            
+            // Also update admins array for backward compatibility
+            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            const adminIndex = admins.findIndex(a => a.email === currentUser.email || a.regNumber === currentUser.regNumber);
+            
+            if (adminIndex !== -1) {
+                admins[adminIndex] = {
+                    ...admins[adminIndex],
+                    name: fullName,
+                    email: email,
+                    password: password,
+                    regNumber: regNumber,
+                    profilePic: profileImageBase64 || admins[adminIndex].profilePic
+                };
+                localStorage.setItem('admins', JSON.stringify(admins));
+            }
+            
+            // Update currentUser object
+            currentUser.fullName = fullName;
+            currentUser.email = email;
+            currentUser.password = password;
+            currentUser.courseDept = courseDept;
+            currentUser.year = year;
+            currentUser.profilePic = profileImageBase64 || currentUser.profilePic;
+            
+            // Save currentUser to localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Also save individual fields for compatibility with other pages
+            localStorage.setItem('adminName', fullName);
+            localStorage.setItem('adminEmail', email);
+            localStorage.setItem('adminRegNumber', regNumber);
+            if (currentUser.profilePic) {
+                localStorage.setItem('userProfilePic', currentUser.profilePic);
+                localStorage.setItem('adminProfilePic', currentUser.profilePic);
+            }
+            
+            // Update display
+            displayUserDataInForm();
+            
+            // Clear image data
+            profileImageBase64 = '';
+            
+            showToast('Account information updated successfully in kcdata!', 'success');
+            
+            // Broadcast change to other tabs
+            const event = new StorageEvent('storage', {
+                key: 'currentUser',
+                newValue: JSON.stringify(currentUser)
+            });
+            window.dispatchEvent(event);
+        }
+
+        // Download all data
+        function downloadAllData() {
+            try {
+                // Load kcdata
+                loadKCData();
+                
+                // Collect all data from localStorage
+                const allData = {
+                    timestamp: new Date().toISOString(),
+                    currentUser: currentUser,
+                    kcdata: kcdata,
+                    admins: JSON.parse(localStorage.getItem('admins') || '[]'),
+                    ratingSystems: JSON.parse(localStorage.getItem('ratingSystems') || '[]'),
+                    suggestionBoxes: JSON.parse(localStorage.getItem('suggestionBoxes') || '[]'),
+                    metadata: {
+                        exportDate: new Date().toLocaleString(),
+                        appVersion: '1.0.0'
+                    }
+                };
+                
+                // Convert to JSON string
+                const jsonString = JSON.stringify(allData, null, 2);
+                
+                // Create download link
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `ScholarX_Backup_${new Date().getTime()}.json`;
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showToast('All data downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error downloading data:', error);
+                showToast('Error downloading data. Please try again.', 'error');
+            }
+        }
+
+        // Delete account functions
+        function showDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('active');
+        }
+
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('active');
+            document.getElementById('deleteAccountPassword').value = '';
+            document.getElementById('deleteAccountConfirm').value = '';
+        }
+
+        function deleteAccount() {
+            if (!currentUser) {
+                showToast('No user found. Please log in again.', 'error');
+                return;
+            }
+            
+            const password = document.getElementById('deleteAccountPassword').value;
+            const confirmText = document.getElementById('deleteAccountConfirm').value;
+            
+            if (!password) {
+                showToast('Please enter your password', 'error');
+                return;
+            }
+            
+            // Verify password
+            if (password !== currentUser.password) {
+                showToast('Incorrect password. Please try again.', 'error');
+                return;
+            }
+            
+            if (confirmText !== 'DELETE MY ACCOUNT') {
+                showToast('Please type "DELETE MY ACCOUNT" to confirm', 'error');
+                return;
+            }
+            
+            // Final confirmation
+            const finalConfirm = confirm(`⚠️ FINAL WARNING: You are about to permanently delete your account.\n\nThis action is irreversible!\n\nClick OK to proceed with account deletion.`);
+            
+            if (!finalConfirm) {
+                showToast('Account deletion cancelled', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            const deleteBtn = document.querySelector('#deleteAccountModal .btn-danger');
+            const originalText = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            deleteBtn.disabled = true;
+            
+            // Simulate deletion process
+            setTimeout(() => {
+                try {
+                    // Load kcdata array
+                    loadKCData();
+                    
+                    // Remove from kcdata array
+                    const userIndex = kcdata.findIndex(u => 
+                        u.regNumber === currentUser.regNumber || 
+                        u.email === currentUser.email
+                    );
+                    
+                    if (userIndex !== -1) {
+                        kcdata.splice(userIndex, 1);
+                        localStorage.setItem('kcdata', JSON.stringify(kcdata));
+                        console.log('Removed user from kcdata array');
+                    }
+                    
+                    // Remove from admins array (for backward compatibility)
+                    const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+                    const adminIndex = admins.findIndex(a => a.email === currentUser.email);
+                    if (adminIndex !== -1) {
+                        admins.splice(adminIndex, 1);
+                        localStorage.setItem('admins', JSON.stringify(admins));
+                        console.log('Removed user from admins array');
+                    }
+                    
+                    // Clear ALL user data
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('adminData');
+                    localStorage.removeItem('adminName');
+                    localStorage.removeItem('adminEmail');
+                    localStorage.removeItem('adminRegNumber');
+                    localStorage.removeItem('adminRole');
+                    localStorage.removeItem('userProfilePic');
+                    localStorage.removeItem('adminProfilePic');
+                    localStorage.removeItem('currentUsername');
+                    
+                    // Clear session storage
+                    sessionStorage.clear();
+                    
+                    showToast('Account deleted from kcdata successfully. Redirecting to login...', 'warning');
+                    closeDeleteAccountModal();
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    showToast('Error deleting account. Please try again.', 'error');
+                } finally {
+                    // Reset button
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // Set icon based on type
+            switch(type) {
+                case 'success':
+                    toastIcon.className = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    toastIcon.className = 'fas fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    toastIcon.className = 'fas fa-exclamation-triangle';
+                    break;
+            }
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Update last login time in kcdata
+                loadKCData();
+                const userIndex = kcdata.findIndex(u => 
+                    u.regNumber === currentUser.regNumber || 
+                    u.email === currentUser.email
+                );
+                if (userIndex !== -1) {
+                    kcdata[userIndex].lastLogin = new Date().toISOString();
+                    localStorage.setItem('kcdata', JSON.stringify(kcdata));
+                }
+                
+                // Update in admins array for backward compatibility
+                const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+                const adminIndex = admins.findIndex(a => a.email === currentUser.email);
+                if (adminIndex !== -1) {
+                    admins[adminIndex].lastLogin = new Date().toISOString();
+                    localStorage.setItem('admins', JSON.stringify(admins));
+                }
+                
+                // Clear session
+                sessionStorage.clear();
+                
+                showToast('Logged out successfully', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

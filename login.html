@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarX - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            background-color: #0F172A;
+        }
+
+        /* Background image with dark overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('scholarimage.png') center/cover no-repeat;
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        /* Additional dark overlay */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            z-index: -1;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            display: block;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-header p {
+            font-size: 12px;
+            color: #00C9B7;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4A6FFF;
+            box-shadow: 0 0 0 2px rgba(74, 111, 255, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+        }
+
+        /* Login button */
+        .login-button {
+            width: 100%;
+            background: transparent;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .login-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer links */
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 10px;
+            transition: color 0.3s ease;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        .copyright {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Error message */
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 4px;
+            display: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #00C9B7;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .login-container {
+                max-width: 90%;
+                padding: 25px;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .login-header h1 {
+                font-size: 22px;
+            }
+            
+            .footer-links {
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px 15px;
+            }
+            
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .login-header h1 {
+                font-size: 20px;
+            }
+            
+            .login-header p {
+                font-size: 11px;
+            }
+            
+            .form-input {
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .login-button {
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            .footer-links {
+                gap: 8px;
+            }
+            
+            .footer-link {
+                font-size: 9px;
+            }
+            
+            .copyright {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Logo -->
+        <img src="logo.png" alt="ScholarX Logo" class="logo">
+        
+        <!-- Login Header -->
+        <div class="login-header">
+            <h1>ScholarX</h1>
+            <p>Connecting Education, Empowering Communication</p>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="loginForm">
+            <!-- Email Input -->
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+            </div>
+            
+            <!-- Password Input -->
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+            
+            <!-- Loading Spinner -->
+            <div class="spinner" id="loadingSpinner"></div>
+            
+            <!-- Login Button -->
+            <button type="submit" class="login-button" id="loginBtn">
+                Sign In
+            </button>
+        </form>
+        
+        <!-- Footer Links -->
+        <div class="login-footer">
+            <div class="footer-links">
+                <a class="footer-link" onclick="showContactModal()">Help</a>
+                <a class="footer-link" onclick="showContactModal()">Contact</a>
+                <a class="footer-link" onclick="showAboutModal()">About</a>
+                <a class="footer-link" onclick="showPrivacyModal()">Privacy Policy</a>
+                <a class="footer-link" onclick="showTermsModal()">Terms of Service</a>
+                <a class="footer-link" onclick="showSupportModal()">Support</a>
+            </div>
+            
+            <div class="copyright">
+                © 2024 ScholarX. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load kcdata from localStorage - Dynamic function that always reads fresh data
+        function loadKcData() {
+            try {
+                const storedData = localStorage.getItem('kcdata');
+                if (storedData) {
+                    return JSON.parse(storedData);
+                }
+                
+                // If no data in localStorage, create initial sample data
+                const sampleData = [
+                    {
+                        regNumber: "KC2024001",
+                        fullName: "Alice Johnson",
+                        email: "alice.j@keplercollege.edu",
+                        password: "Alice@2024",
+                        courseDept: "Computer Science",
+                        year: "Year 24",
+                        category: "Students",
+                        profilePic: ""
+                    },
+                    {
+                        regNumber: "KC2024002",
+                        fullName: "Robert Chen",
+                        email: "robert.c@keplercollege.edu",
+                        password: "Robert@2024",
+                        courseDept: "Mathematics",
+                        year: "Year 24",
+                        category: "Students",
+                        profilePic: ""
+                    },
+                    {
+                        regNumber: "KC2024003",
+                        fullName: "Dr. Sarah Williams",
+                        email: "sarah.w@keplercollege.edu",
+                        password: "Sarah@Dept",
+                        courseDept: "Physics Department",
+                        year: "Year 25",
+                        category: "Departments",
+                        profilePic: ""
+                    },
+                    {
+                        regNumber: "KC2024004",
+                        fullName: "Michael Brown",
+                        email: "michael.b@keplercollege.edu",
+                        password: "Michael@2024",
+                        courseDept: "Engineering",
+                        year: "Year 25",
+                        category: "Students",
+                        profilePic: ""
+                    },
+                    {
+                        regNumber: "KCADMIN001",
+                        fullName: "Admin User",
+                        email: "admin@keplercollege.edu",
+                        password: "Admin@Secure",
+                        courseDept: "Administration",
+                        year: "Year 25",
+                        category: "Administrator",
+                        profilePic: ""
+                    },
+                    {
+                        regNumber: "KCINST001",
+                        fullName: "Prof. James Wilson",
+                        email: "james.w@keplercollege.edu",
+                        password: "James@Teach",
+                        courseDept: "Computer Science",
+                        year: "Year 25",
+                        category: "Instructor",
+                        profilePic: ""
+                    }
+                ];
+                
+                // Save sample data to localStorage
+                localStorage.setItem('kcdata', JSON.stringify(sampleData));
+                return sampleData;
+            } catch (error) {
+                console.error('Error loading kcdata:', error);
+                return [];
+            }
+        }
+        
+        // Authenticate user - Dynamic function that checks against current kcdata
+        function authenticateUser(email, password) {
+            // Always load fresh data from localStorage
+            const kcdata = loadKcData();
+            
+            // Find user in kcdata array (case-insensitive email match)
+            const user = kcdata.find(entry => 
+                entry.email.toLowerCase() === email.toLowerCase() && 
+                entry.password === password
+            );
+            
+            return user;
+        }
+        
+        // Redirect based on category - Dynamic redirection based on user category
+        function redirectBasedOnCategory(user) {
+            // Store user info for the dashboard
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            localStorage.setItem('keplerLoggedInUser', user.fullName);
+            
+            // Store user category for other pages to use
+            localStorage.setItem('userCategory', user.category);
+            
+            // Redirect based on category - exactly as you specified
+            switch(user.category) {
+                case 'Administrator':
+                    window.location.href = 'admindash.html';
+                    break;
+                case 'Instructor':
+                    window.location.href = 'instructordash.html';
+                    break;
+                case 'Students':
+                    window.location.href = 'studentdash.html';
+                    break;
+                case 'Departments':
+                    window.location.href = 'departmentdash.html';
+                    break;
+                default:
+                    // If category not recognized, show error
+                    throw new Error('Unknown user category: ' + user.category);
+            }
+        }
+        
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // Handle login form submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Reset error message
+            errorMessage.style.display = 'none';
+            errorMessage.textContent = '';
+            
+            // Show loading spinner
+            loginBtn.style.display = 'none';
+            loadingSpinner.style.display = 'block';
+            
+            // Authenticate after a short delay (for UX)
+            setTimeout(() => {
+                try {
+                    // Validate inputs
+                    if (!email || !password) {
+                        throw new Error('Please enter both email and password');
+                    }
+                    
+                    // Authenticate user with current kcdata
+                    const user = authenticateUser(email, password);
+                    
+                    if (!user) {
+                        throw new Error('Invalid email or password');
+                    }
+                    
+                    // Redirect based on category
+                    redirectBasedOnCategory(user);
+                    
+                } catch (error) {
+                    // Show error message
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                    
+                    // Hide loading spinner, show login button
+                    loadingSpinner.style.display = 'none';
+                    loginBtn.style.display = 'block';
+                }
+            }, 1000); // 1 second delay for UX
+        });
+        
+        // Modal functions (simplified for login page)
+        function showContactModal() {
+            alert("Contact: support@scholarx.com\nPhone: +250 795 583 674");
+        }
+        
+        function showAboutModal() {
+            alert("ScholarX - Connecting Education, Empowering Communication");
+        }
+        
+        function showPrivacyModal() {
+            alert("Your privacy is important. We protect all user data.");
+        }
+        
+        function showTermsModal() {
+            alert("By using ScholarX, you agree to our terms of service.");
+        }
+        
+        function showSupportModal() {
+            alert("For support, email: support@scholarx.com");
+        }
+        
+        // Load on first visit
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize kcdata if it doesn't exist
+            const kcdata = loadKcData();
+            console.log(`Login system initialized with ${kcdata.length} user records`);
+            
+            // Fallback for logo
+            const logo = document.querySelector('.logo');
+            logo.onerror = function() {
+                this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%234A6FFF"/><text x="50" y="65" font-family="Arial" font-size="50" fill="white" text-anchor="middle">SX</text></svg>';
+            };
+            
+            // Fallback for background image
+            const bgImage = new Image();
+            bgImage.src = 'scholarimage.png';
+            bgImage.onerror = function() {
+                document.body.style.backgroundColor = '#0A0F1F';
+                document.body.style.backgroundImage = 'radial-gradient(circle at 15% 50%, rgba(74, 111, 255, 0.1) 0%, transparent 20%), radial-gradient(circle at 85% 30%, rgba(0, 201, 183, 0.05) 0%, transparent 20%)';
+            };
+            
+            // Pre-fill demo credentials for testing (remove in production)
+            // Uncomment for testing:
+            // emailInput.value = 'admin@keplercollege.edu';
+            // passwordInput.value = 'Admin@Secure';
+        });
+        
+        // Add a debug function to check current kcdata (can be removed in production)
+        window.debugKcData = function() {
+            const data = loadKcData();
+            console.log("Current kcdata in localStorage:", data);
+            alert(`Current kcdata has ${data.length} records\nCategories: ${[...new Set(data.map(d => d.category))].join(', ')}`);
+        };
+    </script>
+</body>
+</html>
