@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Rating & Feedback - ScholarX</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #00C9B7;
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --sidebar-width: 260px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar - Professional Design */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .student-badge {
+            background: rgba(74, 111, 255, 0.15);
+            color: var(--primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: calc(100% - 24px);
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.15);
+            color: white;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: inherit !important; /* Force icon color */
+        }
+
+        /* Profile Section */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            box-shadow: 0 4px 8px rgba(74, 111, 255, 0.2);
+        }
+
+        .profile-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 0; /* No padding for flush header */
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Full Width Flush Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 0;
+            background: white;
+            padding: 25px 30px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            border-radius: 0; /* No curves */
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .page-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 8px 16px rgba(74, 111, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header-content h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0;
+        }
+
+        .header-content p {
+            color: var(--gray-dark);
+            font-size: 15px;
+            max-width: 600px;
+            margin: 0;
+        }
+
+        /* Content Container */
+        .content-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        /* Login Section - Professional */
+        .login-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 35px;
+            box-shadow: var(--shadow);
+            max-width: 480px;
+            margin: 20px auto;
+            border: 1px solid var(--gray-light);
+        }
+
+        .welcome-card {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .welcome-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            margin: 0 auto 18px;
+            box-shadow: 0 8px 16px rgba(74, 111, 255, 0.2);
+        }
+
+        .welcome-card h2 {
+            font-size: 22px;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .welcome-card p {
+            color: var(--gray-dark);
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        /* Stay Logged In with Day Selection */
+        .stay-logged-in-container {
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .stay-logged-in-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stay-logged-in-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stay-logged-in-header h4 {
+            font-size: 15px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .stay-logged-in-header i {
+            color: var(--primary);
+        }
+
+        .stay-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .stay-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .stay-option label {
+            font-size: 14px;
+            color: var(--gray-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stay-option label i {
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .day-badge {
+            background: rgba(74, 111, 255, 0.1);
+            color: var(--primary);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            display: none;
+            font-size: 13px;
+            border-left: 4px solid var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-message {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            display: none;
+            font-size: 13px;
+            border-left: 4px solid var(--success);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 111, 255, 0.3);
+        }
+
+        /* Rating Interface */
+        .rating-interface {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            padding: 20px 0;
+        }
+
+        .session-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .session-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .session-card.locked {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .session-card.submitted {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .session-card.locked::before,
+        .session-card.unlocked::before,
+        .session-card.submitted::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .session-card.locked::before {
+            background: var(--gray);
+        }
+
+        .session-card.unlocked::before {
+            background: var(--accent);
+        }
+
+        .session-card.submitted::before {
+            background: var(--success);
+        }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .session-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .session-number {
+            font-size: 12px;
+            color: var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .session-number i {
+            color: var(--gray) !important;
+        }
+
+        .session-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .session-badge i {
+            font-size: 12px !important;
+            color: inherit !important;
+        }
+
+        .session-badge.locked {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--gray-dark);
+        }
+
+        .session-badge.unlocked {
+            background: rgba(0, 201, 183, 0.1);
+            color: var(--accent);
+        }
+
+        .session-badge.submitted {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        /* Star Rating */
+        .rating-group {
+            margin-bottom: 20px;
+        }
+
+        .rating-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rating-group label i {
+            color: var(--primary) !important;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 8px;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        .star {
+            color: var(--gray-light);
+            transition: var(--transition);
+            position: relative;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .star:hover,
+        .star.active {
+            color: #FFD700;
+            transform: scale(1.1);
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
+        }
+
+        .star:hover ~ .star {
+            color: var(--gray-light);
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .feedback-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        .submit-session-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(74, 111, 255, 0.2);
+        }
+
+        .submit-session-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        .submit-session-btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Enhanced Logout Button */
+        .logout-button-main {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--danger) 0%, #FF6B6B 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+            font-size: 14px;
+        }
+
+        .logout-button-main:hover {
+            background: linear-gradient(135deg, #DC2626 0%, var(--danger) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Enhanced Responses Button */
+        .responses-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent) 0%, #00D4AA 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 201, 183, 0.25);
+            font-size: 14px;
+        }
+
+        .responses-btn:hover {
+            background: linear-gradient(135deg, #00B8A9 0%, var(--accent) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 201, 183, 0.3);
+        }
+
+        /* Header Action Buttons */
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        /* Modal - Professional with Increased Width */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .close-modal:hover {
+            background: var(--light);
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .session-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .session-tab {
+            padding: 10px 18px;
+            background: var(--light);
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            color: var(--gray-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .session-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .session-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .feedback-box {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px;
+            margin-bottom: 22px;
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .feedback-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-title i {
+            color: var(--primary) !important;
+        }
+
+        .feedback-content {
+            color: var(--secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .feedback-content strong {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .feedback-content strong i {
+            color: var(--primary) !important;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .empty-icon {
+            font-size: 52px;
+            color: var(--gray-light);
+            margin-bottom: 18px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-dark);
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            max-width: 320px;
+            margin: 0 auto 25px;
+            color: var(--gray);
+            font-size: 15px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 380px;
+            font-size: 14px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            font-size: 18px;
+            color: var(--secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Helper Text */
+        .helper-text {
+            color: var(--gray);
+            font-size: 13px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .helper-text i {
+            color: var(--primary) !important;
+        }
+
+        /* Footer Note */
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-light);
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sessions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+                max-height: 90vh;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 20px;
+            }
+            
+            .login-section {
+                padding: 25px;
+            }
+            
+            .session-card {
+                padding: 20px;
+            }
+            
+            .star-rating {
+                font-size: 28px;
+            }
+            
+            .modal-body {
+                padding: 18px;
+            }
+            
+            .submit-btn, .logout-button-main, .responses-btn {
+                padding: 14px;
+            }
+            
+            .page-header {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="student-badge">Student Portal</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item" onclick="navigateToStudentDashboard()">
+                <i class="fas fa-chart-line"></i>
+                <span>Student Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="navigateToSuggestionBox()">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestion Box</span>
+            </button>
+            <button class="nav-item active" onclick="navigateToRatingFeedback()">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </button>
+            <button class="nav-item" onclick="navigateToLearningHub()">
+                <i class="fas fa-book-open" style="color: rgba(255, 255, 255, 0.7) !important;"></i>
+                <span>Learning HUB</span>
+            </button>
+            <button class="nav-item" onclick="navigateToSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="profilePicture" src="default-student.png" alt="Profile" class="profile-pic">
+                <div class="profile-info">
+                    <h4 id="studentName">Not Logged In</h4>
+                    <p id="studentReg">Select System</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logoutStudent()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Login Interface -->
+        <div id="loginInterface">
+            <div class="page-header">
+                <div class="page-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="header-content">
+                    <h1>Student Rating & Feedback System</h1>
+                    <p>Access your course rating system and provide valuable session feedback</p>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div class="login-section">
+                    <div class="welcome-card">
+                        <div class="welcome-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h2>Welcome to ScholarX Rating Portal</h2>
+                        <p>Please select your course system and enter your registration number to continue</p>
+                    </div>
+
+                    <div class="error-message" id="errorMessage">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorText"></span>
+                    </div>
+
+                    <div class="success-message" id="successMessage">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="successText"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-layer-group"></i>
+                            Select Rating System *
+                        </label>
+                        <select id="systemSelect" class="form-control">
+                            <option value="">-- Select a System --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i>
+                            Registration Number *
+                        </label>
+                        <input type="text" id="regNumber" class="form-control" placeholder="Enter your registration number">
+                        <div class="helper-text">
+                            <i class="fas fa-info-circle"></i>
+                            Your registration number is required to access the system
+                        </div>
+                    </div>
+
+                    <!-- Stay Logged In with Day Options -->
+                    <div class="stay-logged-in-container">
+                        <div class="stay-logged-in-header">
+                            <i class="fas fa-clock"></i>
+                            <h4>Stay Logged In Options</h4>
+                        </div>
+                        
+                        <div class="stay-logged-in-options">
+                            <div class="stay-option">
+                                <input type="radio" id="stayDay1" name="stayLoggedIn" value="1">
+                                <label for="stayDay1">
+                                    <i class="fas fa-check-circle"></i>
+                                    1 Day
+                                    <span class="day-badge">Standard</span>
+                                </label>
+                            </div>
+                            
+                            <div class="stay-option">
+                                <input type="radio" id="stayDay3" name="stayLoggedIn" value="3" checked>
+                                <label for="stayDay3">
+                                    <i class="fas fa-shield-alt"></i>
+                                    3 Days
+                                    <span class="day-badge">Recommended</span>
+                                </label>
+                            </div>
+                            
+                            <div class="stay-option">
+                                <input type="radio" id="stayDay7" name="stayLoggedIn" value="7">
+                                <label for="stayDay7">
+                                    <i class="fas fa-crown"></i>
+                                    7 Days
+                                    <span class="day-badge">Maximum</span>
+                                </label>
+                            </div>
+                            
+                            <div class="stay-option">
+                                <input type="radio" id="staySession" name="stayLoggedIn" value="session">
+                                <label for="staySession">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    Session Only (Logout when browser closes)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="submit-btn" onclick="loginStudent()">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Access Rating System</span>
+                    </button>
+
+                    <div class="footer-note">
+                        <p><i class="fas fa-headset"></i> Need assistance? Contact your course instructor or system administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating Interface -->
+        <div id="ratingInterface" class="rating-interface">
+            <div class="page-header">
+                <div class="page-icon">
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <div class="header-content">
+                    <h1 id="systemTitle">Rating System</h1>
+                    <p id="courseName">Course Name</p>
+                    
+                    <div class="header-actions">
+                        <button class="responses-btn" id="responsesBtn" onclick="openResponsesModal()">
+                            <i class="fas fa-comments"></i>
+                            <span>View Instructor Responses</span>
+                        </button>
+                        
+                        <button class="logout-button-main" onclick="logoutStudent()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout of System</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div class="sessions-grid" id="sessionsContainer">
+                    <!-- Sessions populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Responses Modal -->
+    <div id="responsesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-comments"></i> Instructor Responses</h2>
+                <button class="close-modal" onclick="closeResponsesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="session-tabs" id="sessionTabs">
+                    <!-- Session tabs populated by JavaScript -->
+                </div>
+                <div id="responsesContent">
+                    <!-- Responses content populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        // Global variables
+        let ratingSystems = [];
+        let currentStudent = null;
+        let currentSystemIndex = null;
+        let sessionRatings = {};
+        let selectedModalSession = null;
+        let userProfileData = {
+            name: '',
+            profilePic: 'default-student.png',
+            registration: ''
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load rating systems
+            ratingSystems = JSON.parse(localStorage.getItem('ratingSystems') || '[]');
+            
+            // Load user profile from previous pages
+            loadUserProfile();
+            
+            // Check for persistent login
+            checkPersistentLogin();
+            
+            // Populate system select
+            populateSystemSelect();
+            
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menuToggle');
+                
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Enter key to submit login form
+            document.getElementById('regNumber').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginStudent();
+                }
+            });
+            
+            // Initialize with login interface
+            document.getElementById('loginInterface').style.display = 'block';
+            document.getElementById('ratingInterface').style.display = 'none';
+            
+            // Set default stay logged in option (3 days)
+            document.getElementById('stayDay3').checked = true;
+        });
+
+        // Check for persistent login
+        function checkPersistentLogin() {
+            const persistentLogin = JSON.parse(localStorage.getItem('studentPersistentLogin') || 'null');
+            
+            if (persistentLogin) {
+                const now = new Date().getTime();
+                const expiry = persistentLogin.expiry;
+                
+                if (now < expiry) {
+                    // Login is still valid
+                    currentStudent = persistentLogin.student;
+                    currentSystemIndex = persistentLogin.systemIndex;
+                    userProfileData.registration = persistentLogin.student;
+                    userProfileData.name = persistentLogin.name || 'Student';
+                    
+                    // Update UI
+                    const system = ratingSystems[currentSystemIndex];
+                    if (system) {
+                        showRatingInterface(system);
+                        showToast(`Welcome back, ${persistentLogin.name || 'Student'}!`, 'success');
+                    } else {
+                        // System no longer exists
+                        localStorage.removeItem('studentPersistentLogin');
+                        showToast('Your course system is no longer available. Please login again.', 'error');
+                    }
+                } else {
+                    // Login expired
+                    localStorage.removeItem('studentPersistentLogin');
+                }
+            }
+        }
+
+        // Load user profile from other connected HTML pages
+        function loadUserProfile() {
+            // Try to get profile from localStorage (shared across pages)
+            const savedProfile = JSON.parse(localStorage.getItem('studentProfile') || 'null');
+            
+            if (savedProfile) {
+                userProfileData = savedProfile;
+            } else {
+                // Try to get from sessionStorage (current session)
+                const sessionData = JSON.parse(sessionStorage.getItem('studentSession') || 'null');
+                if (sessionData && sessionData.student) {
+                    userProfileData.registration = sessionData.student;
+                    userProfileData.name = sessionData.name || 'Student';
+                }
+            }
+            
+            // Update sidebar profile
+            updateProfileSidebar();
+            
+            // Try to get profile picture from other pages
+            const dashboardProfile = JSON.parse(localStorage.getItem('studentDashboardProfile') || 'null');
+            const settingsProfile = JSON.parse(localStorage.getItem('studentSettingsProfile') || 'null');
+            
+            if (settingsProfile && settingsProfile.profilePic) {
+                userProfileData.profilePic = settingsProfile.profilePic;
+            } else if (dashboardProfile && dashboardProfile.profilePic) {
+                userProfileData.profilePic = dashboardProfile.profilePic;
+            }
+            
+            document.getElementById('profilePicture').src = userProfileData.profilePic;
+        }
+
+        // Update profile in sidebar
+        function updateProfileSidebar() {
+            if (currentStudent) {
+                document.getElementById('studentName').textContent = userProfileData.name || 'Student';
+                document.getElementById('studentReg').textContent = currentStudent;
+            } else {
+                document.getElementById('studentName').textContent = 'Not Logged In';
+                document.getElementById('studentReg').textContent = 'Select System';
+            }
+        }
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Navigation functions
+        function navigateToStudentDashboard() {
+            saveUserProfile();
+            window.location.href = 'studentdash.html';
+        }
+
+        function navigateToSuggestionBox() {
+            saveUserProfile();
+            window.location.href = 'studentbox.html';
+        }
+
+        function navigateToRatingFeedback() {
+            // Already on this page
+        }
+
+        function navigateToLearningHub() {
+            saveUserProfile();
+            window.location.href = 'studentLH.html';
+        }
+
+        function navigateToSettings() {
+            saveUserProfile();
+            window.location.href = 'setting.html';
+        }
+
+        // Save user profile to localStorage for sharing across pages
+        function saveUserProfile() {
+            if (currentStudent) {
+                userProfileData.registration = currentStudent;
+                userProfileData.name = document.getElementById('studentName').textContent || 'Student';
+                
+                // Save to localStorage for other pages
+                localStorage.setItem('studentProfile', JSON.stringify(userProfileData));
+                
+                // Also save to session-specific storage
+                sessionStorage.setItem('studentSession', JSON.stringify({
+                    systemIndex: currentSystemIndex,
+                    student: currentStudent,
+                    name: userProfileData.name
+                }));
+            }
+        }
+
+        // Populate system select dropdown
+        function populateSystemSelect() {
+            const select = document.getElementById('systemSelect');
+            select.innerHTML = '<option value="">-- Select a System --</option>';
+            
+            ratingSystems.forEach((system, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${system.systemName} - ${system.courseName}`;
+                select.appendChild(option);
+            });
+            
+            if (ratingSystems.length === 0) {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No rating systems available";
+                option.disabled = true;
+                select.appendChild(option);
+            }
+        }
+
+        // Get session status from localStorage
+        function getSessionStatus(systemIndex) {
+            const sessionStatus = JSON.parse(localStorage.getItem('sessionStatus') || '{}');
+            return sessionStatus[systemIndex] || {};
+        }
+
+        // Get student submissions
+        function getStudentSubmissions() {
+            return JSON.parse(localStorage.getItem('studentSubmissions') || '{}');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast' + (type === 'error' ? ' error' : ' success');
+            
+            // Set appropriate icon
+            const icon = toast.querySelector('i');
+            icon.className = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = message;
+            errorMsg.style.display = 'flex';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            document.getElementById('successText').textContent = message;
+            successMsg.style.display = 'flex';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Hide all messages
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Login student - REQUIRES REGISTRATION NUMBER
+        function loginStudent() {
+            const systemIndex = document.getElementById('systemSelect').value;
+            const regNumber = document.getElementById('regNumber').value.trim().toUpperCase();
+            const stayOption = document.querySelector('input[name="stayLoggedIn"]:checked');
+            const stayDays = stayOption ? stayOption.value : 'session';
+            
+            hideMessages();
+            
+            // Validation
+            if (!systemIndex) {
+                showError('Please select a rating system');
+                return;
+            }
+            
+            if (!regNumber) {
+                showError('Please enter your registration number');
+                return;
+            }
+            
+            const system = ratingSystems[systemIndex];
+            
+            // Check if student is registered in this system
+            if (!system.students || !system.students.includes(regNumber)) {
+                showError('Invalid registration number for this system. Please check your registration number and try again.');
+                return;
+            }
+            
+            // Clear any previous session data
+            sessionRatings = {};
+            
+            // Set current student and system
+            currentStudent = regNumber;
+            currentSystemIndex = parseInt(systemIndex);
+            
+            // Update user profile
+            userProfileData.registration = regNumber;
+            userProfileData.name = `Student (${regNumber})`;
+            updateProfileSidebar();
+            saveUserProfile();
+            
+            // Save persistent login if requested (not "session only")
+            if (stayDays !== 'session') {
+                const days = parseInt(stayDays);
+                const expiry = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+                localStorage.setItem('studentPersistentLogin', JSON.stringify({
+                    student: regNumber,
+                    systemIndex: parseInt(systemIndex),
+                    name: userProfileData.name,
+                    expiry: expiry,
+                    days: days
+                }));
+            } else {
+                // Clear any previous persistent login
+                localStorage.removeItem('studentPersistentLogin');
+            }
+            
+            // Update UI
+            showRatingInterface(system);
+            
+            // Show success message
+            showSuccess(`Welcome, ${regNumber}!`);
+            
+            // Clear form
+            document.getElementById('regNumber').value = '';
+            
+            // Show toast
+            showToast(`Successfully logged in as ${regNumber}`, 'success');
+        }
+
+        // Show rating interface
+        function showRatingInterface(system) {
+            // Update page title
+            document.getElementById('systemTitle').textContent = system.systemName;
+            document.getElementById('courseName').textContent = system.courseName;
+            
+            // Switch interfaces
+            document.getElementById('loginInterface').style.display = 'none';
+            document.getElementById('ratingInterface').style.display = 'flex';
+            
+            // Load data
+            loadRatingInterface(system);
+        }
+
+        // Load rating interface data
+        function loadRatingInterface(system) {
+            const container = document.getElementById('sessionsContainer');
+            container.innerHTML = '';
+            
+            const status = getSessionStatus(currentSystemIndex);
+            const submissions = getStudentSubmissions();
+            const studentKey = `${currentSystemIndex}-${currentStudent}`;
+            const submittedSessions = submissions[studentKey] ? Object.keys(submissions[studentKey]).filter(i => submissions[studentKey][i]) : [];
+            
+            // Show/Hide Responses Button
+            document.getElementById('responsesBtn').style.display = submittedSessions.length > 0 ? 'inline-flex' : 'none';
+            
+            if (system.sessions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h3>No Sessions Available</h3>
+                        <p>This system doesn't have any sessions configured yet. Please contact your instructor.</p>
+                        <button class="responses-btn" onclick="logoutStudent()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            system.sessions.forEach((session, index) => {
+                const isUnlocked = status[index] === true;
+                const isSubmitted = submittedSessions.includes(index.toString());
+                
+                // Initialize rating for this session
+                sessionRatings[index] = { rating: 0, feedback: '' };
+                
+                // Truncate long session names
+                const displaySession = session.length > 40 ? session.substring(0, 40) + '...' : session;
+                
+                let statusClass = 'locked';
+                let statusText = 'Locked';
+                let badgeClass = 'locked';
+                let badgeIcon = 'lock';
+                
+                if (isSubmitted) {
+                    statusClass = 'submitted';
+                    statusText = 'Submitted';
+                    badgeClass = 'submitted';
+                    badgeIcon = 'check-circle';
+                } else if (isUnlocked) {
+                    statusClass = 'unlocked';
+                    statusText = 'Available';
+                    badgeClass = 'unlocked';
+                    badgeIcon = 'lock-open';
+                }
+                
+                const card = document.createElement('div');
+                card.className = `session-card ${statusClass}`;
+                card.innerHTML = `
+                    <div class="session-header">
+                        <div>
+                            <h3 title="${session}">${displaySession}</h3>
+                            <div class="session-number">
+                                <i class="fas fa-hashtag"></i>
+                                <span>Session ${index + 1}</span>
+                            </div>
+                        </div>
+                        <div class="session-badge ${badgeClass}">
+                            <i class="fas fa-${badgeIcon}"></i>
+                            ${statusText}
+                        </div>
+                    </div>
+                    
+                    <div class="rating-group">
+                        <label><i class="fas fa-star"></i> Rate this session (1-5 stars)</label>
+                        <div class="star-rating" id="stars${index}">
+                            <span class="star" onclick="setRating(${index}, 1)">★</span>
+                            <span class="star" onclick="setRating(${index}, 2)">★</span>
+                            <span class="star" onclick="setRating(${index}, 3)">★</span>
+                            <span class="star" onclick="setRating(${index}, 4)">★</span>
+                            <span class="star" onclick="setRating(${index}, 5)">★</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-group">
+                        <label><i class="fas fa-comment"></i> Your Feedback (Optional)</label>
+                        <textarea class="feedback-textarea" id="feedback${index}" 
+                                  placeholder="Share your thoughts about this session..." 
+                                  ${isSubmitted ? 'disabled' : ''}
+                                  oninput="sessionRatings[${index}].feedback = this.value">${isSubmitted ? 'Feedback already submitted' : ''}</textarea>
+                    </div>
+                    
+                    <button class="submit-session-btn" onclick="submitSession(${index})" 
+                            ${!isUnlocked || isSubmitted ? 'disabled' : ''}>
+                        <i class="fas fa-paper-plane"></i>
+                        <span>${isSubmitted ? 'Already Submitted' : 'Submit Feedback'}</span>
+                    </button>
+                `;
+                
+                container.appendChild(card);
+                
+                // If submitted, show the rating
+                if (isSubmitted) {
+                    // Get the submitted rating from localStorage
+                    const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+                    const submittedFeedback = allFeedback.find(f => 
+                        f.systemName === system.systemName && 
+                        f.sessionIndex === index && 
+                        f.studentReg === currentStudent
+                    );
+                    
+                    if (submittedFeedback) {
+                        setRating(index, submittedFeedback.rating);
+                        document.getElementById(`feedback${index}`).value = submittedFeedback.feedback || '';
+                    }
+                }
+            });
+        }
+
+        // Set rating for a session
+        function setRating(sessionIndex, rating) {
+            sessionRatings[sessionIndex].rating = rating;
+            const stars = document.querySelectorAll(`#stars${sessionIndex} .star`);
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Submit session feedback
+        function submitSession(sessionIndex) {
+            const system = ratingSystems[currentSystemIndex];
+            const feedback = document.getElementById(`feedback${sessionIndex}`).value.trim();
+            sessionRatings[sessionIndex].feedback = feedback;
+            
+            if (sessionRatings[sessionIndex].rating === 0) {
+                showToast('Please rate this session before submitting', 'error');
+                return;
+            }
+            
+            // Check if session is unlocked
+            const status = getSessionStatus(currentSystemIndex);
+            if (status[sessionIndex] !== true) {
+                showToast('This session is currently locked and cannot be submitted', 'error');
+                return;
+            }
+            
+            // Create feedback data
+            const feedbackData = {
+                studentReg: currentStudent,
+                systemName: system.systemName,
+                courseName: system.courseName,
+                sessionIndex: sessionIndex,
+                sessionName: system.sessions[sessionIndex],
+                rating: sessionRatings[sessionIndex].rating,
+                feedback: sessionRatings[sessionIndex].feedback,
+                submittedAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            let allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+            allFeedback.push(feedbackData);
+            localStorage.setItem('studentFeedback', JSON.stringify(allFeedback));
+            
+            // Update submissions
+            let submissions = getStudentSubmissions();
+            const studentKey = `${currentSystemIndex}-${currentStudent}`;
+            if (!submissions[studentKey]) submissions[studentKey] = {};
+            submissions[studentKey][sessionIndex] = true;
+            localStorage.setItem('studentSubmissions', JSON.stringify(submissions));
+            
+            // Show success message
+            showToast('Feedback submitted successfully! Your instructor will review it.', 'success');
+            
+            // Reload interface
+            loadRatingInterface(system);
+        }
+
+        // Open responses modal
+        function openResponsesModal() {
+            const system = ratingSystems[currentSystemIndex];
+            const submissions = getStudentSubmissions();
+            const studentKey = `${currentSystemIndex}-${currentStudent}`;
+            
+            const submittedSessions = submissions[studentKey] 
+                ? Object.keys(submissions[studentKey])
+                    .filter(i => submissions[studentKey][i] && system.sessions[i])
+                    .map(i => Number(i))
+                : [];
+            
+            // Build session tabs
+            const tabsContainer = document.getElementById('sessionTabs');
+            tabsContainer.innerHTML = '';
+            
+            if (submittedSessions.length === 0) {
+                document.getElementById('responsesContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-slash"></i>
+                        </div>
+                        <h3>No Submissions Yet</h3>
+                        <p>You haven't submitted feedback for any sessions yet. Submit feedback to see instructor responses.</p>
+                    </div>
+                `;
+            } else {
+                submittedSessions.forEach(index => {
+                    const tab = document.createElement('button');
+                    tab.className = `session-tab ${index === selectedModalSession ? 'active' : ''}`;
+                    const tabText = system.sessions[index].length > 20 
+                        ? system.sessions[index].substring(0, 20) + '...' 
+                        : system.sessions[index];
+                    tab.innerHTML = `<i class="fas fa-file-alt"></i> Session ${index + 1}: ${tabText}`;
+                    tab.title = system.sessions[index];
+                    tab.onclick = () => {
+                        selectedModalSession = index;
+                        loadSessionResponses(index);
+                        // Update active tab
+                        document.querySelectorAll('.session-tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                    };
+                    tabsContainer.appendChild(tab);
+                });
+                
+                // Load initial responses if session is selected
+                if (selectedModalSession !== null && submittedSessions.includes(selectedModalSession)) {
+                    loadSessionResponses(selectedModalSession);
+                } else if (submittedSessions.length > 0) {
+                    selectedModalSession = submittedSessions[0];
+                    loadSessionResponses(selectedModalSession);
+                }
+            }
+            
+            // Show modal
+            document.getElementById('responsesModal').classList.add('active');
+        }
+
+        // Load responses for a specific session
+        function loadSessionResponses(sessionIndex) {
+            const system = ratingSystems[currentSystemIndex];
+            const allFeedback = JSON.parse(localStorage.getItem('studentFeedback') || '[]');
+            
+            // Find student's feedback for this session
+            const myFeedback = allFeedback.find(f => 
+                f.systemName === system.systemName && 
+                f.sessionIndex === sessionIndex && 
+                f.studentReg === currentStudent
+            );
+            
+            // Get instructor replies
+            const replies = JSON.parse(localStorage.getItem('instructorReplies') || '{}');
+            const studentReplies = JSON.parse(localStorage.getItem('studentReplies') || '{}');
+            
+            const feedbackId = `${currentSystemIndex}-${sessionIndex}-${currentStudent}`;
+            const feedbackReplies = replies[feedbackId] || [];
+            
+            let html = `
+                <div class="feedback-box">
+                    <div class="feedback-title">
+                        <i class="fas fa-user-graduate"></i>
+                        Your Feedback for "${system.sessions[sessionIndex]}"
+                    </div>
+                    
+                    <div class="feedback-content">
+                        <strong><i class="fas fa-star"></i> Rating:</strong> 
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            ${myFeedback ? '★'.repeat(myFeedback.rating) + '☆'.repeat(5 - myFeedback.rating) + ` (${myFeedback.rating}/5)` : 'N/A'}
+                        </div>
+                        <br>
+                        <strong><i class="fas fa-comment"></i> Comments:</strong>
+                        <div style="margin-left: 20px; margin-top: 8px; padding: 12px; background: var(--light); border-radius: var(--radius-sm);">
+                            ${myFeedback ? (myFeedback.feedback || 'No comments provided') : 'No feedback found'}
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-content" style="font-size: 12px; color: var(--gray); margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                        <i class="far fa-clock"></i> 
+                        <span>Submitted on: ${myFeedback ? new Date(myFeedback.submittedAt).toLocaleString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+            
+            if (feedbackReplies.length === 0) {
+                html += `
+                    <div class="feedback-box">
+                        <div class="feedback-title">
+                            <i class="fas fa-user-tie"></i>
+                            Instructor Responses
+                        </div>
+                        <div class="feedback-content">
+                            <div style="text-align: center; padding: 30px; color: var(--gray);">
+                                <i class="fas fa-comment-slash" style="font-size: 42px; margin-bottom: 15px; color: var(--gray-light);"></i>
+                                <p style="font-size: 15px;">No responses from your instructor yet.</p>
+                                <p style="font-size: 13px; margin-top: 8px;">Instructors typically respond within 2-3 business days.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="feedback-box">
+                        <div class="feedback-title">
+                            <i class="fas fa-user-tie"></i>
+                            Instructor Responses (${feedbackReplies.length})
+                        </div>
+                `;
+                
+                feedbackReplies.forEach((reply, replyIndex) => {
+                    const thread = studentReplies[feedbackId] ? studentReplies[feedbackId][replyIndex] || [] : [];
+                    
+                    html += `
+                        <div class="reply-item">
+                            <div class="reply-header">
+                                <i class="fas fa-user-tie"></i>
+                                ${reply.instructorName || 'Course Instructor'}
+                                <span style="font-size: 11px; color: var(--gray); margin-left: auto;">
+                                    <i class="far fa-clock"></i> ${new Date(reply.repliedAt).toLocaleString('en-US', { 
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </span>
+                            </div>
+                            <div class="reply-text" style="margin: 12px 0; padding: 12px; background: white; border-radius: var(--radius-sm); border: 1px solid var(--gray-light);">
+                                ${reply.reply}
+                            </div>
+                            
+                            ${thread.length > 0 ? `
+                                <div style="margin-top: 20px; padding-left: 15px; border-left: 2px solid var(--primary);">
+                                    <div style="font-size: 13px; color: var(--gray); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-comments"></i> Conversation Thread (${thread.length} messages)
+                                    </div>
+                                    ${thread.map(msg => `
+                                        <div style="background: white; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 10px; border: 1px solid var(--gray-light);">
+                                            <div style="font-size: 13px; color: var(--primary); font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                                ${msg.role === 'instructor' ? '<i class="fas fa-user-tie"></i> Instructor' : '<i class="fas fa-user-graduate"></i> You'}
+                                                <span style="font-size: 11px; color: var(--gray); margin-left: auto;">
+                                                    ${new Date(msg.date).toLocaleString('en-US', { 
+                                                        month: 'short', 
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 13px; margin: 8px 0;">${msg.reply}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="reply-form">
+                                <textarea class="reply-textarea" id="threadReply${replyIndex}" 
+                                          placeholder="Type your reply to the instructor here..."></textarea>
+                                <button class="reply-btn" onclick="sendThreadReply(${sessionIndex}, ${replyIndex})">
+                                    <i class="fas fa-reply"></i>
+                                    Send Reply
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+            
+            document.getElementById('responsesContent').innerHTML = html;
+        }
+
+        // Send thread reply
+        function sendThreadReply(sessionIndex, replyIndex) {
+            const replyText = document.getElementById(`threadReply${replyIndex}`).value.trim();
+            
+            if (!replyText) {
+                showToast('Please enter a reply message', 'error');
+                return;
+            }
+            
+            const feedbackId = `${currentSystemIndex}-${sessionIndex}-${currentStudent}`;
+            let allStudentReplies = JSON.parse(localStorage.getItem('studentReplies') || '{}');
+            
+            if (!allStudentReplies[feedbackId]) allStudentReplies[feedbackId] = [];
+            if (!Array.isArray(allStudentReplies[feedbackId][replyIndex])) {
+                allStudentReplies[feedbackId][replyIndex] = [];
+            }
+            
+            allStudentReplies[feedbackId][replyIndex].push({
+                reply: replyText,
+                date: new Date().toISOString(),
+                role: 'student'
+            });
+            
+            localStorage.setItem('studentReplies', JSON.stringify(allStudentReplies));
+            
+            // Clear input
+            document.getElementById(`threadReply${replyIndex}`).value = '';
+            
+            // Reload responses
+            loadSessionResponses(sessionIndex);
+            
+            showToast('Reply sent successfully!', 'success');
+        }
+
+        // Close responses modal
+        function closeResponsesModal() {
+            document.getElementById('responsesModal').classList.remove('active');
+            selectedModalSession = null;
+        }
+
+        // Logout student
+        function logoutStudent() {
+            if (confirm('Are you sure you want to logout from the system?')) {
+                // Clear session
+                currentStudent = null;
+                currentSystemIndex = null;
+                sessionRatings = {};
+                selectedModalSession = null;
+                
+                // Clear session storage
+                sessionStorage.removeItem('studentSession');
+                
+                // Clear persistent login
+                localStorage.removeItem('studentPersistentLogin');
+                
+                // Reset UI
+                document.getElementById('studentName').textContent = 'Not Logged In';
+                document.getElementById('studentReg').textContent = 'Select System';
+                document.getElementById('profilePicture').src = 'default-student.png';
+                
+                // Show login interface
+                document.getElementById('loginInterface').style.display = 'block';
+                document.getElementById('ratingInterface').style.display = 'none';
+                
+                // Reset form
+                document.getElementById('systemSelect').value = '';
+                document.getElementById('regNumber').value = '';
+                document.getElementById('stayDay3').checked = true;
+                
+                // Hide messages
+                hideMessages();
+                
+                // Close modal if open
+                closeResponsesModal();
+                
+                showToast('Successfully logged out', 'success');
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                if (document.getElementById('responsesModal').classList.contains('active')) {
+                    closeResponsesModal();
+                }
+            }
+            
+        // Logout student
+        function logoutStudent() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentStudent');
+                window.location.href = 'index.html';
+            }
+        }
+        });
+    </script>
+</body>
+</html>

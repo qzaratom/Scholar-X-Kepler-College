@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ScholarX Student</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #00C9B7;
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --sidebar-width: 260px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR - EXACT COPY FROM Student DASHBOARD */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .Student-badge {
+            background: rgba(74, 111, 255, 0.15);
+            color: var(--primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: calc(100% - 24px);
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.15);
+            color: white;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .profile-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Mobile Menu Toggle - EXACT SAME */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            font-size: 18px;
+            color: var(--secondary);
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .header-content p {
+            color: var(--gray-dark);
+            font-size: 16px;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        /* Settings Card */
+        .settings-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .settings-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+
+        .card-icon.profile {
+            background: linear-gradient(135deg, var(--primary) 0%, #6C8BFF 100%);
+        }
+
+        .card-icon.security {
+            background: linear-gradient(135deg, var(--accent) 0%, #2CE0D0 100%);
+        }
+
+        .card-icon.backup {
+            background: linear-gradient(135deg, var(--warning) 0%, #FBBF24 100%);
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-label.required:after {
+            content: '*';
+            color: var(--danger);
+        }
+
+        .form-input, .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        .form-input:disabled, .form-select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .profile-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed var(--gray-light);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .profile-upload:hover {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 255, 0.05);
+        }
+
+        .profile-upload i {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .profile-upload span {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 111, 255, 0.3);
+        }
+
+        .btn-save {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dde1e7;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-warning:hover {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        /* Profile Picture Preview */
+        #profilePreview {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        #previewImage {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            max-width: 100%;
+        }
+
+        .danger-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(239, 68, 68, 0.1);
+        }
+
+        .danger-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            background: linear-gradient(135deg, var(--danger) 0%, #DC2626 100%);
+        }
+
+        .danger-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        .danger-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.05);
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+        }
+
+        .danger-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .danger-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .danger-info p {
+            font-size: 14px;
+            color: var(--gray-dark);
+        }
+
+        /* Toast - EXACT SAME AS DASHBOARD */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 350px;
+            font-size: 14px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Responsive - EXACT SAME AS DASHBOARD */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .danger-item {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .form-input, .form-select {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle - EXACT SAME AS DASHBOARD -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar - EXACT COPY FROM Student DASHBOARD -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231A1F36%22/%3E%3Ctext x=%2250%22 y=%2260%22 font-family=%22Arial%22 font-size=%2240%22 fill=%22white%22 text-anchor=%22middle%22%3ESX%3C/text%3E%3C/svg%3E'">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="Student-badge">Student Portal</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <!-- USING BUTTONS LIKE IN DASHBOARD -->
+            <button class="nav-item" onclick="navigateToDashboard()">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="navigateToSuggestionBox()">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestion Box</span>
+            </button>
+            <button class="nav-item" onclick="navigateToRatingManagement()">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </button>
+            <button class="nav-item" onclick="navigateToLearningHub()">
+                <i class="fas fa-book-open"></i>
+                <span>Learning HUB</span>
+            </button>
+            <!-- ACTIVE BUTTON FOR SETTINGS -->
+            <button class="nav-item active" onclick="navigateToSettings()">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="sidebarProfilePic" src="default-student.png" alt="Profile" class="profile-pic" onerror="this.src='default-student.png'">
+                <div class="profile-info">
+                    <h4 id="sidebarUserName">Not Logged In</h4>
+                    <p id="sidebarUserRole">Select System</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1>Account Settings</h1>
+                <p>Manage your account information and preferences</p>
+            </div>
+            <div class="header-actions">
+                <div style="background: white; padding: 12px 20px; border-radius: var(--radius-sm); border: 1px solid var(--gray-light); display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-calendar-alt" style="color: var(--primary);"></i>
+                    <span id="currentDate">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+            <!-- Account Information Card -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon profile">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2>Edit Account Information</h2>
+                </div>
+
+                <form id="entryForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-portrait"></i>
+                                Profile Picture
+                            </label>
+                            <div class="profile-upload" id="profileUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload profile picture</span>
+                                <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div id="profilePreview" style="display: none;">
+                                <img id="previewImage" src="" alt="Preview">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-id-card"></i>
+                                Registration Number
+                            </label>
+                            <input type="text" class="form-input" id="regNumber" required disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-user"></i>
+                                Full Name
+                            </label>
+                            <input type="text" class="form-input" id="fullName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" class="form-input" id="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-key"></i>
+                                Password
+                            </label>
+                            <input type="text" class="form-input" id="password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-book"></i>
+                                Course/Department
+                            </label>
+                            <input type="text" class="form-input" id="courseDept" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-calendar-alt"></i>
+                                Year
+                            </label>
+                            <select class="form-select" id="year" required>
+                                <option value="">Select Year</option>
+                                <option value="Year 24">Year 24</option>
+                                <option value="Year 25">Year 25</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-layer-group"></i>
+                                Portal Category
+                            </label>
+                            <select class="form-select" id="category" required disabled>
+                                <option value="">Select Category</option>
+                                <option value="Departments">Departments</option>
+                                <option value="Students">Students</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-save" onclick="saveEntry()">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Data Backup Card -->
+            <div class="settings-card">
+                <div class="card-header">
+                    <div class="card-icon backup">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h2>Data Backup & Export</h2>
+                </div>
+
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h4>Download All Data</h4>
+                        <p>Export all your data including user profile, ratings, feedback, and system data</p>
+                    </div>
+                    <button class="btn btn-warning" onclick="downloadAllData()">
+                        <i class="fas fa-download"></i>
+                        Download Backup
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(245, 158, 11, 0.05); border-radius: var(--radius-sm);">
+                    <p style="color: var(--gray-dark); font-size: 14px; display: flex; align-items: flex-start; gap: 10px;">
+                        <i class="fas fa-info-circle" style="color: var(--warning); margin-top: 2px;"></i>
+                        <span><strong>Note:</strong> This will download a JSON file containing all your application data. Keep this file safe for backup purposes or when migrating to a new system.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <div class="danger-header">
+                <div class="danger-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>Danger Zone</h2>
+            </div>
+
+            <div class="danger-item">
+                <div class="danger-info">
+                    <h4>Delete Account</h4>
+                    <p>Permanently delete your account and all associated data</p>
+                </div>
+                <button class="btn btn-danger" onclick="showDeleteAccountModal()">
+                    <i class="fas fa-user-slash"></i>
+                    Delete Account
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Delete Account</h2>
+                <button class="close-modal" onclick="closeDeleteAccountModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <i class="fas fa-user-slash" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 15px; color: var(--secondary);">Permanently Delete Your Account</h3>
+                    <p style="color: var(--gray-dark); line-height: 1.6;">
+                        This action will:<br>
+                        • Permanently delete your student account<br>
+                        • Remove all your personal data from the system<br>
+                        • Delete all suggestion boxes you created<br>
+                        • Remove all ratings and feedback associated with your account<br>
+                        • Revoke your access immediately<br>
+                        <strong style="color: var(--danger); display: block; margin-top: 15px; padding: 10px; background: rgba(239, 68, 68, 0.05); border-radius: var(--radius-sm);">
+                            ⚠️ This action cannot be undone!
+                        </strong>
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key" style="margin-right: 8px;"></i>
+                        Enter your password to confirm:
+                    </label>
+                    <input type="password" id="deleteAccountPassword" class="form-input" placeholder="Enter your current password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                        Type "DELETE MY ACCOUNT" to confirm:
+                    </label>
+                    <input type="text" id="deleteAccountConfirm" class="form-input" placeholder="DELETE MY ACCOUNT">
+                </div>
+                <div class="form-group" style="background: rgba(239, 68, 68, 0.05); padding: 15px; border-radius: var(--radius-sm); border-left: 4px solid var(--danger); margin-top: 20px;">
+                    <p style="color: var(--danger); font-size: 14px; display: flex; align-items: flex-start; gap: 10px;">
+                        <i class="fas fa-info-circle" style="margin-top: 2px;"></i>
+                        <span><strong>Note:</strong> Account deletion is permanent. If you just need to change roles or access permissions, please contact system support instead.</span>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteAccountModal()">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button class="btn btn-danger" onclick="deleteAccount()">
+                    <i class="fas fa-user-slash"></i>
+                    Delete Account Permanently
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fas fa-check-circle"></i>
+        <span id="toastMessage">Settings updated successfully!</span>
+    </div>
+
+    <script>
+        // Initialize on page load - EXACT SAME LOGIC AS DASHBOARD
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menuToggle');
+                
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // Set current date
+            setCurrentDate();
+            
+            // Load user data (using same pattern as dashboard)
+            loadUserData();
+            
+            // Setup profile picture upload
+            setupProfileUpload();
+        });
+
+        // Navigation functions - EXACT SAME AS DASHBOARD
+        function navigateToDashboard() { 
+            // Save profile data first
+            saveUserProfile();
+            window.location.href = 'studentdash.html';
+        }
+        
+        function navigateToSuggestionBox() { 
+            saveUserProfile();
+            window.location.href = 'studentbox.html'; 
+        }
+        
+        function navigateToRatingManagement() { 
+            saveUserProfile();
+            window.location.href = 'studentR&F.html'; 
+        }
+
+        function navigateToLearningHub() { 
+            saveUserProfile();
+            window.location.href = 'studentLH.html'; 
+        }
+        
+        function navigateToSettings() { 
+            // Already on settings page
+            saveUserProfile();
+        }
+
+        // Save user profile for sharing across pages
+        function saveUserProfile() {
+            const userProfile = JSON.parse(localStorage.getItem('studentProfile') || 'null');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            if (userProfile || currentUser) {
+                localStorage.setItem('studentProfile', JSON.stringify({
+                    name: userProfile?.name || currentUser?.name,
+                    email: userProfile?.email || currentUser?.email,
+                    profilePic: document.getElementById('sidebarProfilePic')?.src || userProfile?.profilePic,
+                    role: 'Student'
+                }));
+            }
+        }
+
+        // Set current date
+        function setCurrentDate() {
+            const currentDate = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', options);
+        }
+
+        // Toggle sidebar on mobile - EXACT SAME AS DASHBOARD
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Load user data - using same pattern as dashboard
+        function loadUserData() {
+            // Check for user in localStorage
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const studentProfile = JSON.parse(localStorage.getItem('studentProfile') || 'null');
+            const kcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+            
+            let userData = null;
+            
+            // Try to get user from currentUser
+            if (currentUser) {
+                userData = currentUser;
+            }
+            // If not found, try studentProfile
+            else if (studentProfile) {
+                userData = studentProfile;
+            }
+            // If still not found, try to find in kcdata
+            else if (kcdata.length > 0) {
+                const adminEmail = localStorage.getItem('adminEmail');
+                if (adminEmail) {
+                    const user = kcdata.find(u => u.email === adminEmail);
+                    if (user) {
+                        userData = user;
+                    }
+                }
+            }
+            
+            // Update sidebar with user data
+            if (userData) {
+                document.getElementById('sidebarUserName').textContent = userData.name || userData.fullName || 'Student';
+                document.getElementById('sidebarUserRole').textContent = userData.role || userData.category || 'Student';
+                
+                // Update profile picture
+                const sidebarPic = document.getElementById('sidebarProfilePic');
+                if (userData.profilePic) {
+                    sidebarPic.src = userData.profilePic;
+                }
+                
+                // Also populate form fields
+                populateFormFields(userData);
+            }
+        }
+
+        // Populate form fields with user data
+        function populateFormFields(userData) {
+            if (!userData) return;
+            
+            document.getElementById('regNumber').value = userData.regNumber || userData.username || '';
+            document.getElementById('fullName').value = userData.fullName || userData.name || '';
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('password').value = userData.password || '';
+            document.getElementById('courseDept').value = userData.courseDept || userData.department || '';
+            document.getElementById('year').value = userData.year || '';
+            document.getElementById('category').value = userData.category || 'Student';
+            
+            // Update profile preview if exists
+            if (userData.profilePic) {
+                document.getElementById('previewImage').src = userData.profilePic;
+                document.getElementById('profilePreview').style.display = 'block';
+            }
+        }
+
+        // Setup profile picture upload
+        function setupProfileUpload() {
+            const profileUpload = document.getElementById('profileUpload');
+            const profilePicInput = document.getElementById('profilePicInput');
+            
+            profileUpload.addEventListener('click', function() {
+                profilePicInput.click();
+            });
+            
+            profilePicInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const imageBase64 = event.target.result;
+                        document.getElementById('previewImage').src = imageBase64;
+                        document.getElementById('profilePreview').style.display = 'block';
+                        
+                        // Update sidebar picture immediately
+                        document.getElementById('sidebarProfilePic').src = imageBase64;
+                        
+                        // Save to localStorage for this session
+                        localStorage.setItem('tempProfilePic', imageBase64);
+                        
+                        showToast('Profile picture updated! Click "Save Changes" to save permanently.', 'success');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // Save entry
+        function saveEntry() {
+            // Get form values
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const courseDept = document.getElementById('courseDept').value.trim();
+            const year = document.getElementById('year').value;
+            const regNumber = document.getElementById('regNumber').value.trim();
+            const category = document.getElementById('category').value;
+            
+            // Validation
+            if (!fullName || !email || !password || !courseDept || !year || !regNumber || !category) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+            
+            // Get current profile picture
+            const profilePic = document.getElementById('previewImage').src || 
+                               localStorage.getItem('tempProfilePic') || 
+                               document.getElementById('sidebarProfilePic').src;
+            
+            // Load kcdata
+            let kcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            // Find user in kcdata
+            const userIndex = kcdata.findIndex(u => 
+                u.regNumber === regNumber || 
+                u.email === email ||
+                (currentUser && (u.email === currentUser.email || u.regNumber === currentUser.regNumber))
+            );
+            
+            // Update or create user in kcdata
+            const userData = {
+                regNumber: regNumber,
+                fullName: fullName,
+                email: email,
+                password: password,
+                courseDept: courseDept,
+                year: year,
+                category: category,
+                profilePic: profilePic,
+                role: 'Student',
+                lastUpdated: new Date().toISOString()
+            };
+            
+            if (userIndex !== -1) {
+                kcdata[userIndex] = { ...kcdata[userIndex], ...userData };
+            } else {
+                kcdata.push(userData);
+            }
+            
+            // Save kcdata
+            localStorage.setItem('kcdata', JSON.stringify(kcdata));
+            
+            // Also save to currentUser
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            
+            // Save to studentProfile
+            localStorage.setItem('studentProfile', JSON.stringify({
+                name: fullName,
+                email: email,
+                profilePic: profilePic,
+                role: 'Student'
+            }));
+            
+            // Update sidebar
+            document.getElementById('sidebarUserName').textContent = fullName;
+            document.getElementById('sidebarUserRole').textContent = category;
+            document.getElementById('sidebarProfilePic').src = profilePic;
+            
+            // Clear temp profile pic
+            localStorage.removeItem('tempProfilePic');
+            
+            showToast('Account information updated successfully!', 'success');
+        }
+
+        // Download all data
+        function downloadAllData() {
+            try {
+                // Collect all data from localStorage
+                const allData = {
+                    timestamp: new Date().toISOString(),
+                    currentUser: JSON.parse(localStorage.getItem('currentUser') || 'null'),
+                    kcdata: JSON.parse(localStorage.getItem('kcdata') || '[]'),
+                    studentProfile: JSON.parse(localStorage.getItem('studentProfile') || 'null'),
+                    ratingSystems: JSON.parse(localStorage.getItem('ratingSystems') || '[]'),
+                    suggestionBoxes: JSON.parse(localStorage.getItem('suggestionBoxes') || '[]'),
+                    studentFeedback: JSON.parse(localStorage.getItem('studentFeedback') || '[]'),
+                    metadata: {
+                        exportDate: new Date().toLocaleString(),
+                        appVersion: '1.0.0'
+                    }
+                };
+                
+                // Convert to JSON string
+                const jsonString = JSON.stringify(allData, null, 2);
+                
+                // Create download link
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `ScholarX_Backup_${new Date().getTime()}.json`;
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showToast('All data downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error downloading data:', error);
+                showToast('Error downloading data. Please try again.', 'error');
+            }
+        }
+
+        // Delete account functions
+        function showDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('active');
+        }
+
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('active');
+            document.getElementById('deleteAccountPassword').value = '';
+            document.getElementById('deleteAccountConfirm').value = '';
+        }
+
+        function deleteAccount() {
+            const password = document.getElementById('deleteAccountPassword').value;
+            const confirmText = document.getElementById('deleteAccountConfirm').value;
+            
+            if (!password) {
+                showToast('Please enter your password', 'error');
+                return;
+            }
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            // Verify password
+            if (password !== (currentUser?.password || '')) {
+                showToast('Incorrect password. Please try again.', 'error');
+                return;
+            }
+            
+            if (confirmText !== 'DELETE MY ACCOUNT') {
+                showToast('Please type "DELETE MY ACCOUNT" to confirm', 'error');
+                return;
+            }
+            
+            // Final confirmation
+            const finalConfirm = confirm(`⚠️ FINAL WARNING: You are about to permanently delete your account.\n\nThis action is irreversible!\n\nClick OK to proceed with account deletion.`);
+            
+            if (!finalConfirm) {
+                showToast('Account deletion cancelled', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            const deleteBtn = document.querySelector('#deleteAccountModal .btn-danger');
+            const originalText = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            deleteBtn.disabled = true;
+            
+            // Simulate deletion process
+            setTimeout(() => {
+                try {
+                    // Remove from kcdata
+                    const kcdata = JSON.parse(localStorage.getItem('kcdata') || '[]');
+                    const userIndex = kcdata.findIndex(u => u.email === currentUser?.email);
+                    if (userIndex !== -1) {
+                        kcdata.splice(userIndex, 1);
+                        localStorage.setItem('kcdata', JSON.stringify(kcdata));
+                    }
+                    
+                    // Clear user data
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('studentProfile');
+                    localStorage.removeItem('adminEmail');
+                    localStorage.removeItem('adminName');
+                    
+                    // Clear session
+                    sessionStorage.clear();
+                    
+                    showToast('Account deleted successfully. Redirecting to login...', 'warning');
+                    closeDeleteAccountModal();
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    showToast('Error deleting account. Please try again.', 'error');
+                } finally {
+                    // Reset button
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Show toast notification - EXACT SAME AS DASHBOARD
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // Set icon based on type
+            switch(type) {
+                case 'success':
+                    toastIcon.className = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    toastIcon.className = 'fas fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    toastIcon.className = 'fas fa-exclamation-triangle';
+                    break;
+            }
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear session
+                sessionStorage.clear();
+                
+                showToast('Logged out successfully', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

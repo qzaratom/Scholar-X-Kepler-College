@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarX - Learning Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #64748B;
+            --accent-light: rgba(0, 201, 183, 0.1);
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            
+            /* Badge Colors */
+            --student: #6366F1;
+            --beginner: #8B5CF6;
+            --amateur: #EC4899;
+            --semi-pro: #F59E0B;
+            --professional: #EF4444;
+            --worldclass: #10B981;
+            --legendary: #06B6D4;
+            --genius: #7C3AED;
+            
+            --sidebar-width: 260px;
+            --transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #F8FAFC;
+            color: #334155;
+            line-height: 1.5;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Compact Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .app-logo {
+            height: 36px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .app-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .student-badge {
+            background: rgba(74, 111, 255, 0.2);
+            color: #8BABFF;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-top: 3px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 2px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: calc(100% - 32px);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 111, 255, 0.2);
+            color: white;
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(74, 111, 255, 0.5);
+        }
+
+        .profile-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 25px;
+            transition: var(--transition);
+            background: transparent;
+            width: calc(100vw - var(--sidebar-width));
+            min-width: 0;
+            overflow-x: hidden;
+        }
+
+        /* Compact Header */
+        .hub-header {
+            margin-bottom: 30px;
+        }
+
+        .hub-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .hub-header p {
+            color: var(--gray-dark);
+            font-size: 14px;
+            max-width: 500px;
+        }
+
+        /* Compact Badge Bar */
+        .upper-badge-bar {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 25px;
+            align-items: center;
+            position: relative;
+            border: 1px solid var(--gray-light);
+        }
+
+        @media (max-width: 768px) {
+            .upper-badge-bar {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        .current-badge-display-large {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .current-badge-icon-large {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 3px solid white;
+            flex-shrink: 0;
+        }
+
+        .current-badge-icon-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 12px;
+        }
+
+        .current-badge-details {
+            flex: 1;
+        }
+
+        .current-badge-name-large {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--secondary);
+        }
+
+        .current-badge-level {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .points-display-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 16px;
+            background: rgba(74, 111, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .points-display-large i {
+            color: #FFD700;
+            font-size: 16px;
+        }
+
+        /* Compact Progress Section */
+        .progress-section-large {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 250px;
+            padding-left: 25px;
+            border-left: 1px solid var(--gray-light);
+        }
+
+        @media (max-width: 768px) {
+            .progress-section-large {
+                padding-left: 0;
+                padding-top: 20px;
+                border-left: none;
+                border-top: 1px solid var(--gray-light);
+                min-width: auto;
+            }
+        }
+
+        .progress-label-large {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .progress-bar-container-large {
+            width: 100%;
+            height: 10px;
+            background: var(--gray-light);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-large {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s ease;
+        }
+
+        .progress-stats-large {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .next-badge-info {
+            text-align: center;
+            font-size: 12px;
+            color: var(--gray);
+            padding: 8px 12px;
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: var(--radius-sm);
+        }
+
+        .next-badge-info span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Compact Badge Journey */
+        .badge-journey-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 25px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-title-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Compact Carousel */
+        .badges-carousel {
+            display: flex;
+            gap: 15px;
+            padding: 15px 5px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .badge-card {
+            min-width: 160px;
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .badge-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .badge-card.current {
+            border-color: var(--primary);
+            background: rgba(74, 111, 255, 0.05);
+        }
+
+        .badge-card.locked {
+            opacity: 0.6;
+        }
+
+        .badge-card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid white;
+        }
+
+        .badge-card-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 12px;
+        }
+
+        .badge-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--secondary);
+        }
+
+        .badge-points {
+            font-size: 11px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .badge-status {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .status-current {
+            background: var(--primary);
+            color: white;
+        }
+
+        .status-achieved {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-locked {
+            background: var(--gray);
+            color: white;
+        }
+
+        /* Compact Content Layout */
+        .hub-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1200px) {
+            .hub-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Compact Tutors Section */
+        .tutors-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-light);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .section-header i {
+            font-size: 20px;
+            color: white;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .tutors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .tutors-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .tutors-grid::-webkit-scrollbar-track {
+            background: rgba(226, 232, 240, 0.5);
+        }
+
+        .tutors-grid::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .tutor-card-enhanced {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+            cursor: pointer;
+        }
+
+        .tutor-card-enhanced:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .tutor-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .tutor-avatar-enhanced {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 3px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .tutor-avatar-enhanced img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tutor-basic-info {
+            flex: 1;
+        }
+
+        .tutor-basic-info h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .tutor-expertise {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .tutor-badge-display {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .tutor-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .stat-item i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+.tutor-bio {
+    color: var(--gray-dark);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    padding: 12px;
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: var(--radius-sm);
+    max-height: 80px;
+    overflow: hidden;
+
+    /* Standard line clamp (no vendor prefix) */
+    display: box;          /* some linters accept this with line-clamp */
+    box-orient: vertical;
+    line-clamp: 3;
+}
+
+
+
+        .tutor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .book-btn {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .view-details-btn {
+            padding: 10px;
+            background: rgba(74, 111, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(74, 111, 255, 0.2);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .view-details-btn:hover {
+            background: rgba(74, 111, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Compact Rankings */
+        .rankings-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-light);
+        }
+
+        .rankings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .rankings-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .rankings-list::-webkit-scrollbar-track {
+            background: rgba(226, 232, 240, 0.5);
+        }
+
+        .rankings-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .ranking-item-enhanced {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            background: rgba(248, 250, 252, 0.5);
+            border: 1px solid var(--gray-light);
+        }
+
+        .ranking-item-enhanced:hover {
+            background: white;
+            transform: translateX(4px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .ranking-item-enhanced.current-user {
+            background: rgba(74, 111, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        .ranking-position-enhanced {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .position-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+        .position-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
+        .position-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); }
+        .position-other { background: var(--gray); }
+
+        .ranking-info-enhanced {
+            flex: 1;
+        }
+
+        .ranking-name-enhanced {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ranking-name-enhanced .you-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .ranking-stats-enhanced {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--gray);
+            align-items: center;
+        }
+
+        .ranking-points-enhanced {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ranking-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Compact Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Compact Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea.form-control {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Compact Buttons */
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--secondary);
+            border: 1px solid var(--gray-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+
+        /* Compact Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            transform: translateX(100px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 300px;
+            font-size: 14px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .upper-badge-bar {
+                padding: 15px;
+            }
+            
+            .current-badge-icon-large {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .badge-journey-section,
+            .tutors-section,
+            .rankings-section {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="app-logo" onerror="this.style.display='none'">
+            <div>
+                <div class="app-name">ScholarX</div>
+                <div class="student-badge">Learning Hub</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item" onclick="navigateTo('studentdash.html')">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('studentR&F.html')">
+                <i class="fas fa-star"></i>
+                <span>Rating & Feedback</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('studentbox.html')">
+                <i class="fas fa-comments"></i>
+                <span>Suggestion Box</span>
+            </button>
+            <button class="nav-item active">
+                <i class="fas fa-book-open"></i>
+                <span>Learning HUB</span>
+            </button>
+            <button class="nav-item" onclick="navigateTo('setting.html')">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img id="sidebarProfilePicture" src="" alt="Profile" class="profile-pic">
+                <div class="profile-info">
+                    <h4 id="sidebarStudentName">Loading...</h4>
+                    <p id="sidebarStudentEmail">Loading...</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logoutStudent()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="hub-header">
+            <h1>Learning Hub</h1>
+            <p>Connect with tutors, earn points, and track your learning journey</p>
+        </div>
+
+        <!-- Badge Bar -->
+        <div class="upper-badge-bar" id="upperBadgeBar">
+            <div class="current-badge-display-large">
+                <div class="current-badge-icon-large" id="currentBadgeIcon">
+                    <img src="student.png" alt="Student Badge">
+                </div>
+                <div class="current-badge-details">
+                    <div class="current-badge-name-large" id="currentBadgeName">STUDENT</div>
+                    <div class="current-badge-level">Current Level</div>
+                    <div class="points-display-large">
+                        <i class="fas fa-star"></i>
+                        <span id="userPoints">0</span> POINTS
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-section-large">
+                <div class="progress-label-large">Progress to Next Level</div>
+                <div class="progress-bar-container-large">
+                    <div class="progress-bar-large" id="progressBar" style="width: 0%; background: var(--student);"></div>
+                </div>
+                <div class="progress-stats-large">
+                    <span id="currentPoints">0</span>
+                    <span id="nextLevelPoints">500</span>
+                </div>
+                <div class="next-badge-info">
+                    <span id="nextBadgePoints">500</span> points needed for next badge
+                </div>
+            </div>
+        </div>
+
+        <!-- Badge Journey -->
+        <div class="badge-journey-section">
+            <div class="section-title">
+                <div class="section-title-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div>
+                    <h2>Badge Journey</h2>
+                    <p>Track your progression through badges</p>
+                </div>
+            </div>
+            
+            <div class="badges-carousel" id="badgesCarousel">
+                <!-- Badges will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="hub-content">
+            <!-- Tutors Section -->
+            <div class="tutors-section">
+                <div class="section-header">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <div>
+                        <h3>Expert Tutors</h3>
+                        <p>Book sessions with certified experts</p>
+                    </div>
+                </div>
+                <div class="tutors-grid" id="tutorsGrid">
+                    <!-- Tutors will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Rankings Section -->
+            <div class="rankings-section">
+                <div class="section-header">
+                    <i class="fas fa-chart-line"></i>
+                    <div>
+                        <h3>Leaderboard</h3>
+                        <p>Top performers in ScholarX</p>
+                    </div>
+                </div>
+                <div class="rankings-list" id="rankingsList">
+                    <!-- Rankings will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Appointment</h2>
+                <button class="close-modal" onclick="closeAppointmentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Tutor</label>
+                    <input type="text" id="appointmentTutor" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Date & Time</label>
+                    <input type="datetime-local" id="appointmentDateTime" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Subject / Topic</label>
+                    <input type="text" id="appointmentSubject" class="form-control" placeholder="What do you need help with?" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Additional Details</label>
+                    <textarea id="appointmentDetails" class="form-control" placeholder="Describe what you'd like to cover..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAppointmentModal()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" onclick="createAppointment()">
+                    <i class="fas fa-calendar-plus"></i>
+                    Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor Details Modal -->
+    <div id="tutorDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tutorDetailsName">Tutor Details</h2>
+                <button class="close-modal" onclick="closeTutorDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid white; box-shadow: var(--shadow);">
+                        <img id="tutorDetailsAvatar" src="" alt="Tutor Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div>
+                        <h3 id="tutorDetailsFullName" style="font-size: 18px; margin-bottom: 5px;">Loading...</h3>
+                        <div id="tutorDetailsExpertise" style="color: var(--primary); font-weight: 600; font-size: 14px;">Loading...</div>
+                    </div>
+                </div>
+                
+                <div id="tutorDetailsBio" style="color: var(--gray-dark); font-size: 14px; line-height: 1.5;">
+                    Loading biography...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTutorDetailsModal()">
+                    Close
+                </button>
+                <button class="btn btn-primary" onclick="bookThisTutor()">
+                    <i class="fas fa-calendar-plus"></i>
+                    Book This Tutor
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        // Global variables
+        let currentStudent = null;
+        let selectedTutor = null;
+        let currentTutorDetails = null;
+        
+        // Badge system configuration
+        const badges = [
+            { 
+                name: "Student", 
+                minPoints: 0, 
+                maxPoints: 499, 
+                image: "student.png",
+                nextLevel: 500,
+                color: "student"
+            },
+            { 
+                name: "Beginner", 
+                minPoints: 500, 
+                maxPoints: 999, 
+                image: "beginner.png",
+                nextLevel: 1000,
+                color: "beginner"
+            },
+            { 
+                name: "Amateur", 
+                minPoints: 1000, 
+                maxPoints: 1499, 
+                image: "amature.png",
+                nextLevel: 1500,
+                color: "amateur"
+            },
+            { 
+                name: "Semi-Pro", 
+                minPoints: 1500, 
+                maxPoints: 1999, 
+                image: "semi-pro.png",
+                nextLevel: 2000,
+                color: "semi-pro"
+            },
+            { 
+                name: "Professional", 
+                minPoints: 2000, 
+                maxPoints: 3999, 
+                image: "professional.png",
+                nextLevel: 4000,
+                color: "professional"
+            },
+            { 
+                name: "World Class", 
+                minPoints: 4000, 
+                maxPoints: 9999, 
+                image: "worldclass.png",
+                nextLevel: 10000,
+                color: "worldclass"
+            },
+            { 
+                name: "Legendary", 
+                minPoints: 10000, 
+                maxPoints: 49999, 
+                image: "legendary.png",
+                nextLevel: 50000,
+                color: "legendary"
+            },
+            { 
+                name: "Genius", 
+                minPoints: 50000, 
+                maxPoints: 999999, 
+                image: "genius.png",
+                nextLevel: null,
+                color: "genius"
+            }
+        ];
+
+        // Tutors Data
+        const tutors = [
+            {
+                id: 1,
+                name: "Dr. Sarah Johnson",
+                subject: "Mathematics & Calculus",
+                points: 1250,
+                badge: "beginner",
+                bio: "PhD in Mathematics with 12+ years of teaching experience.",
+                experience: 12,
+                rating: 4.9,
+                students: 240
+            },
+            {
+                id: 2,
+                name: "Prof. Michael Chen",
+                subject: "Computer Science & AI",
+                points: 2980,
+                badge: "professional",
+                bio: "Former Google engineer turned educator.",
+                experience: 8,
+                rating: 4.8,
+                students: 180
+            },
+            {
+                id: 3,
+                name: "Dr. Emily Williams",
+                subject: "Physics & Astrophysics",
+                points: 4100,
+                badge: "worldclass",
+                bio: "Theoretical physicist with research background at CERN.",
+                experience: 15,
+                rating: 5.0,
+                students: 320
+            },
+            {
+                id: 4,
+                name: "Ms. Jessica Brown",
+                subject: "Chemistry & Biochemistry",
+                points: 850,
+                badge: "student",
+                bio: "Chemistry lab specialist with focus on Organic Chemistry.",
+                experience: 6,
+                rating: 4.7,
+                students: 150
+            }
+        ];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user data
+            loadUserData();
+            
+            // Setup mobile menu toggle
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            
+            // Initialize data
+            initializeData();
+        });
+
+        // Load user data
+        function loadUserData() {
+            // Check URL parameters first
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountData = urlParams.get('account');
+            
+            // Check localStorage for existing student data
+            const storedStudent = JSON.parse(localStorage.getItem('currentStudent') || 'null');
+            
+            // Priority: URL params > localStorage
+            if (accountData) {
+                try {
+                    currentStudent = JSON.parse(decodeURIComponent(accountData));
+                } catch (e) {
+                    console.error("Error parsing URL account data:", e);
+                }
+            } else if (storedStudent) {
+                currentStudent = storedStudent;
+            }
+            
+            // If still no student, create a default one
+            if (!currentStudent) {
+                currentStudent = {
+                    name: "Student User",
+                    email: "student@scholarx.edu",
+                    points: 250
+                };
+            }
+            
+            // Ensure student has points
+            if (currentStudent.points === undefined) {
+                currentStudent.points = 250;
+            }
+            
+            // Save to storage
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudent));
+        }
+
+        // Initialize all data
+        function initializeData() {
+            // Initialize sidebar profile
+            updateSidebarProfile();
+            
+            // Initialize hub profile
+            updateHubProfile();
+            
+            // Render badge carousel
+            renderBadgeCarousel();
+            
+            // Render tutors grid
+            renderTutorsGrid();
+            
+            // Render rankings
+            renderRankings();
+        }
+
+        // Update sidebar profile
+        function updateSidebarProfile() {
+            if (!currentStudent) return;
+            
+            document.getElementById('sidebarStudentName').textContent = currentStudent.name || "Student";
+            document.getElementById('sidebarStudentEmail').textContent = currentStudent.email || "student@scholarx.edu";
+        }
+
+        // Update hub profile section
+        function updateHubProfile() {
+            if (!currentStudent) return;
+            
+            // Update points
+            const points = currentStudent.points || 0;
+            document.getElementById('userPoints').textContent = points.toLocaleString();
+            
+            // Update badge display
+            updateBadgeDisplay(points);
+        }
+
+        // Update badge display based on points
+        function updateBadgeDisplay(points) {
+            let currentBadge = badges[0];
+            let nextBadge = badges[1];
+            
+            // Find current badge
+            for (let i = badges.length - 1; i >= 0; i--) {
+                if (points >= badges[i].minPoints) {
+                    currentBadge = badges[i];
+                    nextBadge = badges[i + 1] || null;
+                    break;
+                }
+            }
+            
+            // Update current badge display
+            document.getElementById('currentBadgeName').textContent = currentBadge.name.toUpperCase();
+            const badgeIcon = document.getElementById('currentBadgeIcon');
+            badgeIcon.style.background = `var(--${currentBadge.color})`;
+            badgeIcon.innerHTML = `<img src="${currentBadge.image}" alt="${currentBadge.name} Badge">`;
+            
+            // Calculate progress
+            if (nextBadge) {
+                const pointsNeeded = nextBadge.minPoints - currentBadge.minPoints;
+                const pointsProgress = points - currentBadge.minPoints;
+                const progressPercentage = Math.min(100, (pointsProgress / pointsNeeded) * 100);
+                
+                const pointsToNext = nextBadge.minPoints - points;
+                document.getElementById('nextBadgePoints').textContent = pointsToNext > 0 ? pointsToNext.toLocaleString() : "0";
+                document.getElementById('currentPoints').textContent = points.toLocaleString();
+                document.getElementById('nextLevelPoints').textContent = nextBadge.minPoints.toLocaleString();
+                
+                // Update progress bar
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = `${progressPercentage}%`;
+                progressBar.style.background = `var(--${currentBadge.color})`;
+            } else {
+                // Max level reached
+                document.getElementById('nextBadgePoints').textContent = "MAX";
+                document.getElementById('currentPoints').textContent = points.toLocaleString();
+                document.getElementById('nextLevelPoints').textContent = "MAX";
+                
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = `100%`;
+                progressBar.style.background = `var(--${currentBadge.color})`;
+            }
+        }
+
+        // Render badge carousel
+        function renderBadgeCarousel() {
+            const badgesCarousel = document.getElementById('badgesCarousel');
+            const points = currentStudent.points || 0;
+            
+            badgesCarousel.innerHTML = '';
+            
+            badges.forEach((badge, index) => {
+                const isAchieved = points >= badge.minPoints;
+                const isCurrent = points >= badge.minPoints && points <= badge.maxPoints;
+                const isLocked = !isAchieved;
+                
+                const badgeElement = document.createElement('div');
+                badgeElement.className = `badge-card ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`;
+                badgeElement.innerHTML = `
+                    <div class="badge-card-icon" style="background: var(--${badge.color})">
+                        <img src="${badge.image}" alt="${badge.name}">
+                    </div>
+                    <div class="badge-info">
+                        <h4>${badge.name}</h4>
+                        <div class="badge-points">${badge.minPoints.toLocaleString()} - ${badge.maxPoints.toLocaleString()} pts</div>
+                        <div class="badge-status ${isCurrent ? 'status-current' : isAchieved ? 'status-achieved' : 'status-locked'}">
+                            ${isCurrent ? 'CURRENT' : isAchieved ? 'ACHIEVED' : 'LOCKED'}
+                        </div>
+                    </div>
+                `;
+                
+                badgesCarousel.appendChild(badgeElement);
+            });
+        }
+
+        // Render tutors grid
+        function renderTutorsGrid() {
+            const tutorsGrid = document.getElementById('tutorsGrid');
+            tutorsGrid.innerHTML = '';
+            
+            tutors.forEach(tutor => {
+                const tutorElement = document.createElement('div');
+                tutorElement.className = 'tutor-card-enhanced';
+                tutorElement.innerHTML = `
+                    <div class="tutor-header">
+                        <div class="tutor-avatar-enhanced">
+                            <div style="width:100%;height:100%;background:linear-gradient(135deg, var(--${tutor.badge}), var(--primary));display:flex;align-items:center;justify-content:center;color:white;font-size:20px;">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                        </div>
+                        <div class="tutor-basic-info">
+                            <h4>${tutor.name}</h4>
+                            <div class="tutor-expertise">${tutor.subject}</div>
+                            <div class="tutor-badge-display" style="background: var(--${tutor.badge})">${tutor.badge.replace('-', ' ').toUpperCase()}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tutor-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <div class="stat-value">${tutor.points.toLocaleString()}</div>
+                                <div class="stat-label">POINTS</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-chart-line"></i>
+                            <div>
+                                <div class="stat-value">${tutor.rating}</div>
+                                <div class="stat-label">RATING</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tutor-bio">${tutor.bio}</div>
+                    
+                    <div class="tutor-actions">
+                        <button class="book-btn" onclick="openAppointmentModal(${tutor.id})">
+                            <i class="fas fa-calendar-plus"></i>
+                            BOOK
+                        </button>
+                        <button class="view-details-btn" onclick="viewTutorDetails(${tutor.id})">
+                            <i class="fas fa-info-circle"></i>
+                            DETAILS
+                        </button>
+                    </div>
+                `;
+                
+                tutorsGrid.appendChild(tutorElement);
+            });
+        }
+
+        // View tutor details
+        function viewTutorDetails(tutorId) {
+            const tutor = tutors.find(t => t.id === tutorId);
+            if (!tutor) return;
+            
+            currentTutorDetails = tutor;
+            
+            document.getElementById('tutorDetailsName').textContent = tutor.name;
+            document.getElementById('tutorDetailsFullName').textContent = tutor.name;
+            document.getElementById('tutorDetailsExpertise').textContent = tutor.subject;
+            document.getElementById('tutorDetailsBio').textContent = tutor.bio;
+            
+            document.getElementById('tutorDetailsModal').classList.add('active');
+        }
+
+        // Close tutor details modal
+        function closeTutorDetailsModal() {
+            document.getElementById('tutorDetailsModal').classList.remove('active');
+            currentTutorDetails = null;
+        }
+
+        // Book the tutor from details modal
+        function bookThisTutor() {
+            if (currentTutorDetails) {
+                closeTutorDetailsModal();
+                setTimeout(() => openAppointmentModal(currentTutorDetails.id), 300);
+            }
+        }
+
+        // Render rankings
+        function renderRankings() {
+            const rankingsList = document.getElementById('rankingsList');
+            
+            // Create sample data for rankings
+            const rankedStudents = [
+                { name: "Alex Johnson", email: "alex@email.com", points: 1250 },
+                { name: "Maria Garcia", email: "maria@email.com", points: 980 },
+                { name: "David Chen", email: "david@email.com", points: 850 },
+                { name: currentStudent.name, email: currentStudent.email, points: currentStudent.points || 250 },
+                { name: "Lisa Wong", email: "lisa@email.com", points: 620 },
+                { name: "James Wilson", email: "james@email.com", points: 580 }
+            ];
+            
+            // Sort by points
+            rankedStudents.sort((a, b) => b.points - a.points);
+            
+            rankingsList.innerHTML = '';
+            
+            rankedStudents.forEach((student, index) => {
+                // Get badge for this student
+                let studentBadge = badges[0];
+                for (let i = badges.length - 1; i >= 0; i--) {
+                    if (student.points >= badges[i].minPoints) {
+                        studentBadge = badges[i];
+                        break;
+                    }
+                }
+                
+                const isCurrentUser = student.email === currentStudent.email;
+                const rankingElement = document.createElement('div');
+                rankingElement.className = `ranking-item-enhanced ${isCurrentUser ? 'current-user' : ''}`;
+                rankingElement.innerHTML = `
+                    <div class="ranking-position-enhanced position-${index < 3 ? index + 1 : 'other'}">
+                        ${index + 1}
+                    </div>
+                    <div class="ranking-info-enhanced">
+                        <div class="ranking-name-enhanced">
+                            ${student.name}
+                            ${isCurrentUser ? '<span class="you-badge">YOU</span>' : ''}
+                        </div>
+                        <div class="ranking-stats-enhanced">
+                            <span class="ranking-points-enhanced">
+                                <i class="fas fa-star"></i> ${student.points.toLocaleString()}
+                            </span>
+                            <span class="ranking-badge" style="background: var(--${studentBadge.color})">
+                                ${studentBadge.name}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                rankingsList.appendChild(rankingElement);
+            });
+        }
+
+        // Open appointment modal
+        function openAppointmentModal(tutorId) {
+            const tutor = tutors.find(t => t.id === tutorId);
+            if (!tutor) return;
+            
+            selectedTutor = tutor;
+            document.getElementById('appointmentTutor').value = tutor.name;
+            
+            // Set default date/time
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(10, 0, 0, 0);
+            
+            const year = tomorrow.getFullYear();
+            const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const day = String(tomorrow.getDate()).padStart(2, '0');
+            const hours = String(tomorrow.getHours()).padStart(2, '0');
+            const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('appointmentDateTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('appointmentSubject').value = '';
+            document.getElementById('appointmentDetails').value = '';
+            document.getElementById('appointmentModal').classList.add('active');
+        }
+
+        // Close appointment modal
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').classList.remove('active');
+            selectedTutor = null;
+        }
+
+        // Create appointment
+        function createAppointment() {
+            const dateTime = document.getElementById('appointmentDateTime').value;
+            const subject = document.getElementById('appointmentSubject').value.trim();
+            
+            if (!dateTime) {
+                showToast('Please select date and time', 'error');
+                return;
+            }
+            
+            if (!subject) {
+                showToast('Please enter a subject', 'error');
+                return;
+            }
+            
+            // Award points
+            const pointsEarned = 50;
+            currentStudent.points = (currentStudent.points || 0) + pointsEarned;
+            
+            // Update storage
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudent));
+            
+            // Update UI
+            updateHubProfile();
+            renderBadgeCarousel();
+            renderRankings();
+            
+            // Show success
+            showToast(`Appointment booked with ${selectedTutor.name}! +${pointsEarned} points`, 'success');
+            
+            // Close modal
+            closeAppointmentModal();
+        }
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Navigation function
+        function navigateTo(page) {
+            const accountData = encodeURIComponent(JSON.stringify(currentStudent));
+            window.location.href = `${page}?account=${accountData}`;
+        }
+
+        // Logout student
+        function logoutStudent() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentStudent');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

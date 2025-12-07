@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarX - Department Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #1A1F36;
+            --primary-dark: #1A1F36;
+            --secondary: #1A1F36;
+            --accent: #00C9B7;
+            --light: #F8FAFC;
+            --gray-light: #E2E8F0;
+            --gray: #94A3B8;
+            --gray-dark: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 3px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 15px -5px rgba(0, 0, 0, 0.1), 0 6px 8px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Permanent Desktop Sidebar */
+        .desktop-sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary) 0%, #0F172A 100%);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+        }
+
+        .desktop-nav {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .desktop-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 15px;
+            position: relative;
+            border-left: 4px solid transparent;
+        }
+
+        .desktop-nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            padding-left: 25px;
+        }
+
+        .desktop-nav-item.active {
+            background: rgba(0, 201, 183, 0.15);
+            color: white;
+            border-left: 4px solid var(--accent);
+        }
+
+        .desktop-nav-item i {
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-profile-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic-sidebar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .profile-info-sidebar h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .profile-info-sidebar p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .logout-btn-sidebar {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .logout-btn-sidebar:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Content Area */
+        .main-content-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 0;
+            background: #F8FAFC;
+        }
+
+        /* Main Content Header */
+        .content-header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--gray-light);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            color: var(--gray-dark);
+            font-size: 14px;
+        }
+
+        .user-info-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-welcome {
+            text-align: right;
+        }
+
+        .user-welcome h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 3px;
+        }
+
+        .user-welcome p {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* Main Content Container */
+        .content-container {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Login Container */
+        .login-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 50px;
+            box-shadow: var(--shadow-lg);
+            max-width: 500px;
+            margin: 50px auto;
+            border: 1px solid var(--gray-light);
+        }
+
+        .login-container h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            color: var(--gray-dark);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 255, 0.1);
+        }
+
+        .btn {
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 111, 255, 0.25);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: none;
+        }
+
+        /* Date Display */
+        .date-display {
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--secondary);
+            box-shadow: var(--shadow);
+            width: fit-content;
+        }
+
+        .date-display i {
+            color: var(--accent);
+        }
+
+        /* Box Card */
+        .box-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .box-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .box-title h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .box-date {
+            font-size: 15px;
+            color: var(--gray);
+        }
+
+        /* Suggestions Grid */
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .suggestion-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 25px;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .suggestion-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--secondary);
+            flex: 1;
+        }
+
+        .vote-count {
+            background: var(--light);
+            color: var(--secondary);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .suggestion-description {
+            color: var(--gray-dark);
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .vote-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-vote {
+            flex: 1;
+            padding: 12px;
+            background: var(--light);
+            color: var(--secondary);
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-xs);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-vote:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-vote.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-vote i {
+            font-size: 14px;
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-header h3 {
+            font-size: 22px;
+            color: var(--secondary);
+        }
+
+        .total-votes {
+            background: white;
+            color: var(--secondary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid var(--gray-light);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 25px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .stat-card h4 {
+            font-size: 18px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--gray-dark);
+            font-size: 15px;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--secondary);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .stat-percentage {
+            font-size: 13px;
+            color: var(--gray);
+            margin-left: 10px;
+        }
+
+        /* Recommendations Section */
+        .recommendations-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius-sm);
+            padding: 35px;
+            margin-top: 40px;
+            color: white;
+        }
+
+        .recommendations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .recommendations-header h3 {
+            font-size: 22px;
+            color: white;
+        }
+
+        .recommendations-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xs);
+            padding: 25px;
+        }
+
+        .recommendation-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendation-item::before {
+            content: '•';
+            margin-right: 12px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .btn-action {
+            padding: 16px 30px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--success) 0%, #0d9e78 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            flex: 1;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            transform: translateY(100px);
+            background: var(--secondary);
+            color: white;
+            padding: 20px 25px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            opacity: 0;
+            transition: transform 0.4s, opacity 0.4s;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: var(--gray);
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Responsive adjustments for very small screens */
+        @media (max-width: 1024px) {
+            .suggestions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Permanent Desktop Sidebar -->
+    <aside class="desktop-sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="ScholarX Logo" class="sidebar-logo" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Crect%20width=%22100%22%20height=%22100%22%20fill=%22%234A6FFF%22/%3E%3Ctext%20x=%2250%22%20y=%2260%22%20font-family=%22Arial%22%20font-size=%2240%22%20fill=%22white%22%20text-anchor=%22middle%22%3ESX%3C/text%3E%3C/svg%3E'">
+            <div class="sidebar-title">ScholarX</div>
+            <div class="sidebar-subtitle">Department Portal</div>
+        </div>
+        
+        <nav class="desktop-nav">
+            <a href="#" class="desktop-nav-item active" onclick="event.preventDefault(); loadDashboard();">
+                <i class="fas fa-lightbulb"></i>
+                <span>Suggestions Dashboard</span>
+            </a>
+            <a href="#" class="desktop-nav-item" onclick="event.preventDefault(); showStatistics();">
+                <i class="fas fa-chart-bar"></i>
+                <span>Voting Statistics</span>
+            </a>
+            <a href="#" class="desktop-nav-item" onclick="event.preventDefault(); showRecommendations();">
+                <i class="fas fa-robot"></i>
+                <span>AI Recommendations</span>
+            </a>
+            <a href="#" class="desktop-nav-item" onclick="event.preventDefault(); generatePDFReport();">
+                <i class="fas fa-download"></i>
+                <span>Download Report</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile-sidebar" id="userProfileSidebar">
+                <img id="profilePictureSidebar" src="default-avatar.png" alt="Profile" class="profile-pic-sidebar" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ccircle%20cx=%2250%22%20cy=%2250%22%20r=%2245%22%20fill=%22%234A6FFF%22/%3E%3Ctext%20x=%2250%22%20y=%2260%22%20font-family=%22Arial%22%20font-size=%2240%22%20fill=%22white%22%20text-anchor=%22middle%22%3EA%3C/text%3E%3C/svg%3E'">
+                <div class="profile-info-sidebar">
+                    <h4 id="adminNameSidebar">Department Head</h4>
+                    <p id="adminRoleSidebar">Login Required</p>
+                </div>
+            </div>
+            <button class="logout-btn-sidebar" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content-wrapper">
+        <!-- Content Header -->
+        <div class="content-header" id="contentHeader">
+            <div class="header-title">
+                <h1 id="pageTitle">Department Portal Login</h1>
+                <p id="pageSubtitle">Access department suggestions and feedback</p>
+            </div>
+            <div class="user-info-header" id="userInfoHeader" style="display: none;">
+                <div class="user-welcome">
+                    <h4 id="userNameHeader">Welcome</h4>
+                    <p id="userDepartmentHeader">Department</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Container -->
+        <div class="content-container">
+            <!-- Login Container -->
+            <div class="login-container" id="loginContainer">
+                <h2>Department Portal Login</h2>
+                <p class="login-subtitle">Enter your department credentials to access suggestions and feedback</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Select Department</label>
+                        <select id="departmentSelect" class="form-control" required>
+                            <option value="">-- Select Department --</option>
+                            <!-- Departments will be populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Passcode</label>
+                        <input type="password" id="passcodeInput" class="form-control" placeholder="Enter department passcode" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login to Department Portal
+                    </button>
+                </form>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                    <p style="color: var(--gray); font-size: 14px; text-align: center;">
+                        <i class="fas fa-info-circle"></i>
+                        Need access? Contact your administrator for department credentials.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dashboard Container -->
+            <div class="dashboard-container" id="dashboardContainer">
+                <!-- Date Display -->
+                <div class="date-display">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate">Loading...</span>
+                </div>
+
+                <!-- Box Cards -->
+                <div id="boxesContainer">
+                    <!-- Suggestion boxes will be populated here -->
+                </div>
+
+                <!-- Statistics Section -->
+                <div class="stats-section" id="statsSection">
+                    <div class="stats-header">
+                        <h3>Voting Statistics</h3>
+                        <span class="total-votes" id="totalVotesDisplay">0 total votes</span>
+                    </div>
+                    <div class="stats-grid" id="statsGrid">
+                        <!-- Statistics will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Recommendations Section -->
+                <div class="recommendations-section" id="recommendationsSection" style="display: none;">
+                    <div class="recommendations-header">
+                        <h3>AI Recommendations & Solutions</h3>
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <!-- Recommendations will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="action-bar">
+                    <button class="btn-action btn-download" onclick="generatePDFReport()">
+                        <i class="fas fa-download"></i>
+                        Download Complete Report
+                    </button>
+                    <button class="btn-action btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i id="toastIcon" class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        // Global variables
+        let suggestionBoxes = [];
+        let currentDepartment = null;
+        let departmentData = [];
+        let departmentIndex = -1;
+        let currentBoxIndex = -1;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            setCurrentDate();
+            
+            // Load suggestion boxes
+            loadSuggestionBoxes();
+            
+            // Populate department dropdown
+            populateDepartmentDropdown();
+            
+            // Setup login form
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Load department data if already logged in
+            checkExistingSession();
+        });
+
+        // Set current date
+        function setCurrentDate() {
+            const currentDate = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', options);
+        }
+
+        // Load suggestion boxes from localStorage
+        function loadSuggestionBoxes() {
+            const stored = JSON.parse(localStorage.getItem('suggestionBoxes') || '[]');
+            suggestionBoxes = stored;
+            return stored;
+        }
+
+        // Load statistics from localStorage
+        function loadStatistics() {
+            return JSON.parse(localStorage.getItem('suggestionStats') || '{}');
+        }
+
+        // Load department data
+        function loadDepartmentData(boxIndex, deptIndex) {
+            const key = `deptData_${boxIndex}_${deptIndex}`;
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+
+        // Save department data
+        function saveDepartmentData(boxIndex, deptIndex, data) {
+            const key = `deptData_${boxIndex}_${deptIndex}`;
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Populate department dropdown
+        function populateDepartmentDropdown() {
+            const select = document.getElementById('departmentSelect');
+            const boxes = loadSuggestionBoxes();
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Collect all departments with their boxes
+            const departmentsMap = new Map();
+            
+            boxes.forEach((box, boxIndex) => {
+                box.departments.forEach((dept, deptIndex) => {
+                    const heads = box.departmentHeads?.[deptIndex] || [];
+                    
+                    heads.forEach(head => {
+                        const key = `${dept}|${head.name}|${head.passcode}`;
+                        if (!departmentsMap.has(key)) {
+                            departmentsMap.set(key, {
+                                department: dept,
+                                headName: head.name,
+                                passcode: head.passcode,
+                                boxIndex: boxIndex,
+                                deptIndex: deptIndex
+                            });
+                        }
+                    });
+                });
+            });
+            
+            // Add options to dropdown
+            departmentsMap.forEach((deptInfo, key) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${deptInfo.department} (${deptInfo.headName})`;
+                option.dataset.info = JSON.stringify(deptInfo);
+                select.appendChild(option);
+            });
+            
+            // If no departments found
+            if (departmentsMap.size === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No departments available';
+                option.disabled = true;
+                select.appendChild(option);
+            }
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const select = document.getElementById('departmentSelect');
+            const passcode = document.getElementById('passcodeInput').value.trim();
+            
+            if (!select.value) {
+                showToast('Please select a department', 'error');
+                return;
+            }
+            
+            // Get department info
+            const deptInfo = JSON.parse(select.selectedOptions[0].dataset.info);
+            
+            // Verify passcode
+            if (deptInfo.passcode !== passcode) {
+                showToast('Invalid passcode. Please try again.', 'error');
+                return;
+            }
+            
+            // Login successful
+            currentDepartment = deptInfo;
+            departmentIndex = deptInfo.deptIndex;
+            currentBoxIndex = deptInfo.boxIndex;
+            
+            // Update UI elements
+            updateUserInterface(deptInfo);
+            
+            // Save session
+            sessionStorage.setItem('deptSession', JSON.stringify({
+                department: deptInfo.department,
+                headName: deptInfo.headName,
+                boxIndex: deptInfo.boxIndex,
+                deptIndex: deptInfo.deptIndex,
+                loggedInAt: new Date().toISOString()
+            }));
+            
+            // Load department data
+            departmentData = loadDepartmentData(currentBoxIndex, departmentIndex);
+            
+            // Show dashboard
+            showDashboard();
+            
+            showToast(`Welcome, ${deptInfo.headName}!`, 'success');
+        }
+
+        // Update user interface after login
+        function updateUserInterface(deptInfo) {
+            // Update sidebar
+            document.getElementById('adminNameSidebar').textContent = deptInfo.headName;
+            document.getElementById('adminRoleSidebar').textContent = deptInfo.department;
+            
+            // Update header
+            document.getElementById('userNameHeader').textContent = deptInfo.headName;
+            document.getElementById('userDepartmentHeader').textContent = deptInfo.department;
+            document.getElementById('userInfoHeader').style.display = 'flex';
+            
+            // Update page title
+            document.getElementById('pageTitle').textContent = `${deptInfo.department} Dashboard`;
+            document.getElementById('pageSubtitle').textContent = 'Manage suggestions and feedback';
+        }
+
+        // Check existing session
+        function checkExistingSession() {
+            const sessionData = sessionStorage.getItem('deptSession');
+            
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    const boxes = loadSuggestionBoxes();
+                    
+                    // Check if session is still valid (less than 24 hours old)
+                    const loginTime = new Date(session.loggedInAt);
+                    const now = new Date();
+                    const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
+                    
+                    if (hoursDiff < 24 && boxes[session.boxIndex]) {
+                        currentDepartment = {
+                            department: session.department,
+                            headName: session.headName,
+                            boxIndex: session.boxIndex,
+                            deptIndex: session.deptIndex
+                        };
+                        
+                        departmentIndex = session.deptIndex;
+                        currentBoxIndex = session.boxIndex;
+                        
+                        // Update UI
+                        updateUserInterface(currentDepartment);
+                        
+                        // Load department data
+                        departmentData = loadDepartmentData(currentBoxIndex, departmentIndex);
+                        
+                        // Show dashboard
+                        showDashboard();
+                    } else {
+                        // Session expired
+                        sessionStorage.removeItem('deptSession');
+                    }
+                } catch (e) {
+                    console.error('Error parsing session data:', e);
+                    sessionStorage.removeItem('deptSession');
+                }
+            }
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+            
+            // Load dashboard content
+            loadDepartmentDashboard();
+        }
+
+        // Load dashboard
+        function loadDashboard() {
+            if (!currentDepartment) return;
+            
+            loadDepartmentDashboard();
+            document.getElementById('statsSection').style.display = 'none';
+            document.getElementById('recommendationsSection').style.display = 'none';
+        }
+
+        // Load department dashboard
+        function loadDepartmentDashboard() {
+            if (!currentDepartment) return;
+            
+            const box = suggestionBoxes[currentBoxIndex];
+            const deptName = box.departments[currentDepartment.deptIndex];
+            
+            // Display box information
+            displayBoxInfo();
+            
+            // Load and display statistics
+            loadAndDisplayStats();
+            
+            // Generate recommendations
+            generateRecommendations();
+        }
+
+        // Display box information
+        function displayBoxInfo() {
+            const container = document.getElementById('boxesContainer');
+            const box = suggestionBoxes[currentBoxIndex];
+            const deptName = box.departments[departmentIndex];
+            const choices = box.choices[departmentIndex] || [];
+            const stats = loadStatistics();
+            
+            if (choices.length === 0) {
+                container.innerHTML = `
+                    <div class="box-card">
+                        <div class="box-header">
+                            <div class="box-title">
+                                <h3>${box.name}</h3>
+                                <div class="box-date">Department: ${deptName}</div>
+                            </div>
+                        </div>
+                        <div class="empty-state">
+                            <i class="fas fa-lightbulb empty-icon"></i>
+                            <h3 style="color: var(--gray-dark); margin-bottom: 10px;">No Suggestions Available</h3>
+                            <p style="color: var(--gray);">No common suggestions have been added for your department yet.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate total votes for this department
+            let deptTotalVotes = 0;
+            choices.forEach((choice, choiceIndex) => {
+                const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                deptTotalVotes += stats[statKey] || 0;
+            });
+            
+            container.innerHTML = `
+                <div class="box-card">
+                    <div class="box-header">
+                        <div class="box-title">
+                            <h3>${box.name}</h3>
+                            <div class="box-date">Department: ${deptName} • Head: ${currentDepartment.headName}</div>
+                        </div>
+                        <div class="vote-count">
+                            <i class="fas fa-chart-bar"></i>
+                            ${deptTotalVotes} total votes
+                        </div>
+                    </div>
+                    
+                    <div class="suggestions-grid">
+                        ${choices.map((choice, choiceIndex) => {
+                            const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                            const votes = stats[statKey] || 0;
+                            const percentage = deptTotalVotes > 0 ? 
+                                Math.round((votes / deptTotalVotes) * 100) : 0;
+                            
+                            return `
+                                <div class="suggestion-card">
+                                    <div class="suggestion-header">
+                                        <div class="suggestion-title">${choice}</div>
+                                        <div class="vote-count">
+                                            <i class="fas fa-thumbs-up"></i>
+                                            ${votes}
+                                        </div>
+                                    </div>
+                                    <div class="suggestion-description">
+                                        This suggestion has received ${votes} vote${votes !== 1 ? 's' : ''} 
+                                        (${percentage}% of total department votes).
+                                    </div>
+                                    <div class="vote-buttons">
+                                        <button class="btn-vote ${hasUserVoted(choiceIndex) ? 'active' : ''}" 
+                                                onclick="voteForSuggestion(${choiceIndex})"
+                                                ${hasUserVoted(choiceIndex) ? 'disabled' : ''}>
+                                            <i class="fas fa-thumbs-up"></i>
+                                            ${hasUserVoted(choiceIndex) ? 'Voted' : 'Vote Support'}
+                                        </button>
+                                        <button class="btn-vote" onclick="addComment(${choiceIndex})">
+                                            <i class="fas fa-comment"></i>
+                                            Add Comment
+                                        </button>
+                                    </div>
+                                    ${hasUserVoted(choiceIndex) ? `
+                                        <div style="font-size: 13px; color: var(--success); margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-check-circle"></i>
+                                            You have already voted for this suggestion
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <!-- Comments Section -->
+                    ${getCommentsSection()}
+                </div>
+            `;
+        }
+
+        // Check if user has voted for a suggestion
+        function hasUserVoted(choiceIndex) {
+            return departmentData.some(item => 
+                item.type === 'vote' && 
+                item.choiceIndex === choiceIndex
+            );
+        }
+
+        // Get comments section
+        function getCommentsSection() {
+            const comments = departmentData.filter(item => item.type === 'comment');
+            
+            if (comments.length === 0) {
+                return `
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                        <h4 style="color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-comments"></i> Comments & Feedback
+                        </h4>
+                        <p style="color: var(--gray); font-size: 15px;">
+                            No comments yet. Be the first to add feedback!
+                        </p>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                    <h4 style="color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-comments"></i> Comments & Feedback (${comments.length})
+                    </h4>
+                    <div style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                        ${comments.map(comment => `
+                            <div style="background: var(--light); padding: 15px; border-radius: var(--radius-xs); margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong style="color: var(--secondary);">${comment.suggestion}</strong>
+                                    <small style="color: var(--gray);">${formatDate(comment.timestamp)}</small>
+                                </div>
+                                <p style="color: var(--gray-dark); font-size: 14px; margin-bottom: 5px;">${comment.comment}</p>
+                                <div style="font-size: 12px; color: var(--accent); display: flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-user"></i> ${currentDepartment.headName}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Vote for a suggestion
+        function voteForSuggestion(choiceIndex) {
+            const box = suggestionBoxes[currentBoxIndex];
+            const choice = box.choices[departmentIndex][choiceIndex];
+            
+            // Update statistics
+            const stats = loadStatistics();
+            const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+            stats[statKey] = (stats[statKey] || 0) + 1;
+            
+            // Save statistics
+            localStorage.setItem('suggestionStats', JSON.stringify(stats));
+            
+            // Record vote in department data
+            departmentData.push({
+                type: 'vote',
+                choice: choice,
+                choiceIndex: choiceIndex,
+                voteType: 'support',
+                timestamp: new Date().toISOString(),
+                votedBy: currentDepartment.headName
+            });
+            
+            saveDepartmentData(currentBoxIndex, departmentIndex, departmentData);
+            
+            showToast('Your vote has been recorded!', 'success');
+            
+            // Refresh display
+            displayBoxInfo();
+            loadAndDisplayStats();
+            generateRecommendations();
+        }
+
+        // Add comment to a suggestion
+        function addComment(choiceIndex) {
+            const box = suggestionBoxes[currentBoxIndex];
+            const choice = box.choices[departmentIndex][choiceIndex];
+            
+            const comment = prompt(`Add your comment for "${choice}":`);
+            if (!comment || comment.trim() === '') return;
+            
+            // Record comment in department data
+            departmentData.push({
+                type: 'comment',
+                suggestion: choice,
+                choiceIndex: choiceIndex,
+                comment: comment.trim(),
+                timestamp: new Date().toISOString(),
+                commentedBy: currentDepartment.headName
+            });
+            
+            saveDepartmentData(currentBoxIndex, departmentIndex, departmentData);
+            
+            showToast('Your comment has been added!', 'success');
+            
+            // Refresh display
+            displayBoxInfo();
+            generateRecommendations();
+        }
+
+        // Load and display statistics
+        function loadAndDisplayStats() {
+            const stats = loadStatistics();
+            const box = suggestionBoxes[currentBoxIndex];
+            const choices = box.choices[departmentIndex] || [];
+            
+            if (choices.length === 0) {
+                document.getElementById('statsSection').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('statsSection').style.display = 'block';
+            
+            // Calculate total votes
+            let totalVotes = 0;
+            choices.forEach((choice, choiceIndex) => {
+                const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                totalVotes += stats[statKey] || 0;
+            });
+            
+            document.getElementById('totalVotesDisplay').textContent = 
+                `${totalVotes} total vote${totalVotes !== 1 ? 's' : ''}`;
+            
+            // Prepare statistics data
+            const statsData = choices.map((choice, choiceIndex) => {
+                const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                const votes = stats[statKey] || 0;
+                const percentage = totalVotes > 0 ? 
+                    Math.round((votes / totalVotes) * 100) : 0;
+                
+                return { choice, votes, percentage };
+            });
+            
+            // Sort by votes (descending)
+            statsData.sort((a, b) => b.votes - a.votes);
+            
+            // Display statistics
+            const statsGrid = document.getElementById('statsGrid');
+            
+            // Create top suggestions card
+            let topSuggestionsHTML = `
+                <div class="stat-card">
+                    <h4>Top Suggestions</h4>
+            `;
+            
+            statsData.slice(0, 5).forEach((item, index) => {
+                topSuggestionsHTML += `
+                    <div class="stat-item">
+                        <span class="stat-label">
+                            ${index + 1}. ${item.choice}
+                        </span>
+                        <div>
+                            <span class="stat-value">${item.votes}</span>
+                            <span class="stat-percentage">(${item.percentage}%)</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            topSuggestionsHTML += `</div>`;
+            
+            // Create distribution card
+            let distributionHTML = `
+                <div class="stat-card">
+                    <h4>Vote Distribution</h4>
+            `;
+            
+            statsData.forEach(item => {
+                const barWidth = totalVotes > 0 ? 
+                    Math.max((item.votes / totalVotes) * 100, 5) : 0;
+                
+                distributionHTML += `
+                    <div class="stat-item">
+                        <span class="stat-label">${item.choice}</span>
+                        <div style="display: flex; align-items: center; gap: 15px; width: 200px;">
+                            <div style="flex: 1; height: 10px; background: var(--gray-light); border-radius: 5px; overflow: hidden;">
+                                <div style="width: ${barWidth}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));"></div>
+                            </div>
+                            <span class="stat-value">${item.votes}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            distributionHTML += `</div>`;
+            
+            statsGrid.innerHTML = topSuggestionsHTML + distributionHTML;
+        }
+
+        // Show statistics section
+        function showStatistics() {
+            if (!currentDepartment) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            document.getElementById('statsSection').style.display = 'block';
+            document.getElementById('recommendationsSection').style.display = 'none';
+            
+            // Update active nav item
+            document.querySelectorAll('.desktop-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('.desktop-nav-item:nth-child(2)').classList.add('active');
+            
+            // Update page title
+            document.getElementById('pageTitle').textContent = 'Voting Statistics';
+            document.getElementById('pageSubtitle').textContent = 'Analyze voting patterns and trends';
+            
+            // Load statistics if not already loaded
+            loadAndDisplayStats();
+            
+            // Scroll to statistics
+            document.getElementById('statsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show recommendations section
+        function showRecommendations() {
+            if (!currentDepartment) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            document.getElementById('statsSection').style.display = 'none';
+            document.getElementById('recommendationsSection').style.display = 'block';
+            
+            // Update active nav item
+            document.querySelectorAll('.desktop-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('.desktop-nav-item:nth-child(3)').classList.add('active');
+            
+            // Update page title
+            document.getElementById('pageTitle').textContent = 'AI Recommendations';
+            document.getElementById('pageSubtitle').textContent = 'Smart insights and implementation suggestions';
+            
+            // Generate recommendations if not already generated
+            if (!window.currentRecommendations) {
+                generateRecommendations();
+            }
+            
+            // Scroll to recommendations
+            document.getElementById('recommendationsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Generate AI recommendations
+        function generateRecommendations() {
+            const box = suggestionBoxes[currentBoxIndex];
+            const choices = box.choices[departmentIndex] || [];
+            const stats = loadStatistics();
+            
+            if (choices.length === 0) {
+                document.getElementById('recommendationsSection').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('recommendationsSection').style.display = 'block';
+            
+            // Calculate statistics
+            let totalVotes = 0;
+            const voteData = choices.map((choice, choiceIndex) => {
+                const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                const votes = stats[statKey] || 0;
+                totalVotes += votes;
+                return { choice, votes };
+            });
+            
+            // Sort by votes
+            voteData.sort((a, b) => b.votes - a.votes);
+            
+            // Get comments
+            const comments = departmentData.filter(item => item.type === 'comment');
+            
+            // Generate recommendations based on data
+            const recommendations = [
+                "Based on voting patterns, the top suggestions represent the most pressing concerns for your department members.",
+                "Consider implementing the top 3 voted suggestions as they have the highest consensus among stakeholders.",
+                "For suggestions with lower votes, consider gathering more feedback through targeted discussions or surveys.",
+                "Review comments and feedback to understand the context and nuances behind each suggestion.",
+                "Create an implementation timeline prioritizing quick wins (suggestions that can be implemented within 30 days).",
+                "Assign team members responsibility for each suggestion implementation to ensure accountability.",
+                "Schedule follow-up meetings to review progress on suggestion implementation every 2 weeks.",
+                "Consider budget implications and resource allocation for implementing the top suggestions.",
+                "Document the decision-making process for transparency with department members.",
+                "Establish metrics to measure the impact of implemented suggestions over the next quarter."
+            ];
+            
+            // Add data-driven recommendations
+            if (voteData.length > 0) {
+                const topSuggestion = voteData[0];
+                const consensusPercentage = totalVotes > 0 ? 
+                    Math.round((topSuggestion.votes / totalVotes) * 100) : 0;
+                
+                if (consensusPercentage > 50) {
+                    recommendations.unshift(
+                        `"${topSuggestion.choice}" has strong consensus (${consensusPercentage}% of votes). This should be your highest priority implementation.`
+                    );
+                }
+                
+                if (comments.length > 0) {
+                    recommendations.unshift(
+                        `You have ${comments.length} comments providing valuable context. Review these carefully before implementation planning.`
+                    );
+                }
+            }
+            
+            // Display recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = recommendations
+                .map(rec => `<div class="recommendation-item">${rec}</div>`)
+                .join('');
+            
+            // Also store for PDF generation
+            window.currentRecommendations = recommendations;
+        }
+
+        // Generate PDF report
+        async function generatePDFReport() {
+            if (!currentDepartment) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const box = suggestionBoxes[currentBoxIndex];
+            const deptName = box.departments[departmentIndex];
+            const stats = loadStatistics();
+            const choices = box.choices[departmentIndex] || [];
+            
+            // Calculate total votes
+            let totalVotes = 0;
+            choices.forEach((choice, choiceIndex) => {
+                const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                totalVotes += stats[statKey] || 0;
+            });
+            
+            // Header
+            doc.setFillColor(26, 31, 54);
+            doc.rect(0, 0, 210, 30, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text('ScholarX', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Department Portal Report', 20, 27);
+            
+            // Department Information
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text(deptName + ' Report', 20, 50);
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Suggestion Box: ${box.name}`, 20, 60);
+            doc.text(`Department Head: ${currentDepartment.headName}`, 20, 67);
+            doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 74);
+            doc.text(`Total Suggestions: ${choices.length}`, 20, 81);
+            doc.text(`Total Votes: ${totalVotes}`, 20, 88);
+            
+            // Suggestions Summary
+            let yPos = 100;
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Suggestions Summary', 20, yPos);
+            yPos += 10;
+            
+            choices.forEach((choice, choiceIndex) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                
+                const statKey = `${currentBoxIndex}-${departmentIndex}-${choiceIndex}`;
+                const votes = stats[statKey] || 0;
+                const percentage = totalVotes > 0 ? 
+                    Math.round((votes / totalVotes) * 100) : 0;
+                
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`${choiceIndex + 1}. ${choice}`, 25, yPos);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Votes: ${votes} (${percentage}%)`, 30, yPos + 7);
+                
+                // Add comments for this suggestion
+                const comments = departmentData.filter(item => 
+                    item.type === 'comment' && item.choiceIndex === choiceIndex
+                );
+                
+                if (comments.length > 0) {
+                    doc.setFontSize(10);
+                    doc.text('Comments:', 30, yPos + 14);
+                    
+                    comments.forEach((comment, commentIndex) => {
+                        const commentY = yPos + 21 + (commentIndex * 5);
+                        if (commentY < 280) {
+                            doc.text(`• ${comment.comment}`, 35, commentY);
+                        }
+                    });
+                    
+                    yPos += 14 + (comments.length * 5);
+                }
+                
+                yPos += 20;
+            });
+            
+            // Recommendations
+            if (yPos > 200) {
+                doc.addPage();
+                yPos = 30;
+            }
+            
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('AI Recommendations & Solutions', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            
+            const recommendations = window.currentRecommendations || [
+                "Review all suggestions and prioritize based on impact and feasibility",
+                "Engage department members in implementation planning",
+                "Establish clear metrics for success measurement",
+                "Create accountability structure for implementation",
+                "Schedule regular progress review meetings"
+            ];
+            
+            recommendations.forEach((rec, index) => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                
+                doc.text(`${index + 1}. ${rec}`, 25, yPos);
+                yPos += 8;
+            });
+            
+            // Implementation Plan
+            if (yPos > 200) {
+                doc.addPage();
+                yPos = 30;
+            }
+            
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Suggested Implementation Plan', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            
+            const planItems = [
+                "Week 1-2: Review report and prioritize suggestions",
+                "Week 3-4: Develop implementation plan for top 3 suggestions",
+                "Week 5-8: Execute quick-win implementations",
+                "Week 9-12: Monitor impact and gather feedback",
+                "Month 4: Full review and adjustment of strategy"
+            ];
+            
+            planItems.forEach((item, index) => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                
+                doc.text(`• ${item}`, 25, yPos);
+                yPos += 8;
+            });
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text(
+                    `Page ${i} of ${pageCount} • Generated by ScholarX Department Portal`,
+                    105, 
+                    287, 
+                    { align: 'center' }
+                );
+                doc.text(
+                    new Date().toLocaleDateString(),
+                    195, 
+                    287, 
+                    { align: 'right' }
+                );
+            }
+            
+            // Save the PDF
+            const fileName = `${deptName.replace(/[^a-zA-Z0-9]/g, '_')}_Report_${new Date().getTime()}.pdf`;
+            doc.save(fileName);
+            
+            showToast('PDF report generated successfully!', 'success');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('deptSession');
+                currentDepartment = null;
+                
+                // Reset UI to login state
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('dashboardContainer').style.display = 'none';
+                document.getElementById('userInfoHeader').style.display = 'none';
+                
+                // Clear form
+                document.getElementById('loginForm').reset();
+                
+                // Reset user info
+                document.getElementById('adminNameSidebar').textContent = 'Department Head';
+                document.getElementById('adminRoleSidebar').textContent = 'Login Required';
+                
+                // Reset page title
+                document.getElementById('pageTitle').textContent = 'Department Portal Login';
+                document.getElementById('pageSubtitle').textContent = 'Access department suggestions and feedback';
+                
+                // Reset active nav item
+                document.querySelectorAll('.desktop-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector('.desktop-nav-item:nth-child(1)').classList.add('active');
+                
+                showToast('Logged out successfully', 'success');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            switch(type) {
+                case 'success':
+                    toastIcon.className = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    toastIcon.className = 'fas fa-exclamation-circle';
+                    break;
+            }
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
